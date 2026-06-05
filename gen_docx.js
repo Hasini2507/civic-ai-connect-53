@@ -22,7 +22,7 @@ function makeCell(text, w, isHeader = false, options = {}) {
     else runs.push(new TextRun({ ...bodyText, text }));
     return new TableCell({
         borders: cellBorders,
-        width: { size: w, type: 'dxa' },
+        width: { size: w, type: WidthType.DXA },
         shading,
         margins: { top: 60, bottom: 60, left: 100, right: 100 },
         children: [new Paragraph({ children: runs })],
@@ -31,7 +31,7 @@ function makeCell(text, w, isHeader = false, options = {}) {
 
 function makeTable(rows, widths) {
     return new Table({
-        width: { size: widths.reduce((a, b) => a + b, 0), type: 'dxa' },
+        width: { size: widths.reduce((a, b) => a + b, 0), type: WidthType.DXA },
         columnWidths: widths,
         rows: rows.map((row, ri) => new TableRow({
             children: row.map((cell, ci) => makeCell(cell.text || cell, widths[ci], cell.header || false, { alt: ri % 2 === 1 })),
