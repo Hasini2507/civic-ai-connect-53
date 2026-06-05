@@ -1,14 +1,14 @@
 const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, ImageRun,
         Header, Footer, AlignmentType, LevelFormat, ExternalHyperlink,
-        PageNumber, PageBreak } = require('docx');
+        PageNumber, PageBreak, HeadingLevel, WidthType, ShadingType, BorderStyle } = require('docx');
 
 const fs = require('fs');
 
 // Common styles
-const cellBorder = { style: 'single', size: 1, color: 'CCCCCC' };
+const cellBorder = { style: BorderStyle.SINGLE, size: 1, color: 'CCCCCC' };
 const cellBorders = { top: cellBorder, bottom: cellBorder, left: cellBorder, right: cellBorder };
-const headerShade = { fill: '1E3A5F', type: 'clear' };
-const altRowShade = { fill: 'F0F4F8', type: 'clear' };
+const headerShade = { fill: '1E3A5F', type: ShadingType.CLEAR };
+const altRowShade = { fill: 'F0F4F8', type: ShadingType.CLEAR };
 const hdrText = { color: 'FFFFFF', bold: true, size: 22, font: 'Calibri' };
 const bodyText = { size: 22, font: 'Calibri' };
 const bodyTextSmall = { size: 20, font: 'Calibri' };
