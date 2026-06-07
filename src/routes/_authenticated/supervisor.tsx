@@ -54,7 +54,7 @@ function SupervisorPage() {
     mutationFn: async ({ id, department_id }: { id: string; department_id: string }) => {
       const { error } = await supabase
         .from("complaints")
-        .update({ department_id, assigned_officer_id: null, status: "under_review" })
+        .update({ department_id, assigned_officer_id: null, status: "under_review" } as any)
         .eq("id", id);
       if (error) throw error;
     },
