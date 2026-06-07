@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      complaint_activities: {
+        Row: {
+          action: string
+          actor_id: string | null
+          complaint_id: string
+          created_at: string
+          from_status: Database["public"]["Enums"]["complaint_status"] | null
+          id: string
+          metadata: Json | null
+          note: string | null
+          to_status: Database["public"]["Enums"]["complaint_status"] | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          complaint_id: string
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["complaint_status"] | null
+          id?: string
+          metadata?: Json | null
+          note?: string | null
+          to_status?: Database["public"]["Enums"]["complaint_status"] | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          complaint_id?: string
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["complaint_status"] | null
+          id?: string
+          metadata?: Json | null
+          note?: string | null
+          to_status?: Database["public"]["Enums"]["complaint_status"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "complaint_activities_complaint_id_fkey"
+            columns: ["complaint_id"]
+            isOneToOne: false
+            referencedRelation: "complaints"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       complaint_media: {
         Row: {
           complaint_id: string
@@ -98,6 +142,7 @@ export type Database = {
           supporter_count: number
           title: string
           updated_at: string
+          visibility: Database["public"]["Enums"]["complaint_visibility"]
         }
         Insert: {
           address?: string | null
@@ -121,6 +166,7 @@ export type Database = {
           supporter_count?: number
           title: string
           updated_at?: string
+          visibility?: Database["public"]["Enums"]["complaint_visibility"]
         }
         Update: {
           address?: string | null
@@ -144,6 +190,7 @@ export type Database = {
           supporter_count?: number
           title?: string
           updated_at?: string
+          visibility?: Database["public"]["Enums"]["complaint_visibility"]
         }
         Relationships: [
           {
@@ -221,6 +268,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          department_id: string | null
           full_name: string | null
           id: string
           phone: string | null
@@ -229,6 +277,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          department_id?: string | null
           full_name?: string | null
           id: string
           phone?: string | null
@@ -237,12 +286,21 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
+          department_id?: string | null
           full_name?: string | null
           id?: string
           phone?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sla_configurations: {
         Row: {
@@ -321,12 +379,15 @@ export type Database = {
         | "other"
       complaint_status:
         | "submitted"
+        | "under_review"
         | "assigned"
         | "in_progress"
+        | "waiting_for_verification"
         | "resolved"
         | "verified"
         | "closed"
         | "rejected"
+      complaint_visibility: "public" | "private"
       media_kind: "image" | "video" | "audio"
       priority_level: "low" | "medium" | "high" | "critical"
     }
@@ -479,13 +540,16 @@ export const Constants = {
       ],
       complaint_status: [
         "submitted",
+        "under_review",
         "assigned",
         "in_progress",
+        "waiting_for_verification",
         "resolved",
         "verified",
         "closed",
         "rejected",
       ],
+      complaint_visibility: ["public", "private"],
       media_kind: ["image", "video", "audio"],
       priority_level: ["low", "medium", "high", "critical"],
     },
