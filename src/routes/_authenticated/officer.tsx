@@ -55,7 +55,7 @@ function OfficerPage() {
         patch.assigned_officer_id = user.id;
       }
       if (status === "resolved") patch.resolved_at = new Date().toISOString();
-      const { error } = await supabase.from("complaints").update(patch).eq("id", id);
+      const { error } = await supabase.from("complaints").update(patch as any).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {

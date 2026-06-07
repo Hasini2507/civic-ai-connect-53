@@ -21,7 +21,7 @@ function Dashboard() {
   useEffect(() => {
     if (roles.includes("admin")) navigate({ to: "/admin/users", replace: true });
     else if (roles.includes("officer")) navigate({ to: "/officer", replace: true });
-    else if (roles.some((r) => ["supervisor", "engineer", "commissioner"].includes(r)))
+    else if (roles.some((r: string) => ["supervisor", "engineer", "commissioner"].includes(r)))
       navigate({ to: "/supervisor", replace: true });
   }, [roles, navigate]);
 

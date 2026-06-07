@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_authenticated/complaints/$id")({
 function ComplaintDetail() {
   const { id } = Route.useParams();
   const { roles } = Route.useRouteContext();
-  const isStaff = roles.some((r) => r !== "citizen");
+  const isStaff = roles.some((r: string) => r !== "citizen");
 
   const { data, isLoading } = useQuery({
     queryKey: ["complaint", id],
