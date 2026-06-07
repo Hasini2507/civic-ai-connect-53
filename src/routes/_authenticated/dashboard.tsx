@@ -1,10 +1,12 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { Plus, AlertTriangle, CheckCircle2, Clock, Inbox } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { StatusBadge, PriorityBadge } from "@/components/StatusBadge";
 import { categoryLabel } from "@/lib/civic";
+import { useRealtime } from "@/hooks/use-realtime";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard · CivicFlow" }] }),
@@ -12,7 +14,16 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 function Dashboard() {
-  const { user } = Route.useRouteContext();
+  const { user, roles } = Route.useRouteContext();
+  const navigate = useNavigate();
+
+  // Role-aware landing
+  useEffect(() => {
+    if (roles.includes("admin")) navigate({ to: "/admin/users", replace: true });
+    else if (roles.includes("officer")) navigate({ to: "/officer", replace: true });
+    else if (roles.some((r) => ["supervisor", "engineer", "commissioner"].includes(r)))
+      navigate({ to: "/supervisor", replace: true });
+  }, [roles, navigate]);
 
   const { data: mine } = useQuery({
     queryKey: ["my-complaints", user.id],
@@ -27,6 +38,8 @@ function Dashboard() {
       return data;
     },
   });
+
+  useRealtime("citizen-dash", ["complaints"], [["my-complaints", user.id]]);
 
   const open = mine?.filter((c) => !["resolved", "verified", "closed"].includes(c.status)).length ?? 0;
   const resolved = mine?.filter((c) => ["resolved", "verified", "closed"].includes(c.status)).length ?? 0;

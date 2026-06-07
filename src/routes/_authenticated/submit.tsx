@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Loader2, MapPin, Upload, Sparkles, X, Mic, Video as VideoIcon, Image as ImageIcon } from "lucide-react";
+import { Loader2, MapPin, Upload, Sparkles, X, Mic, Video as VideoIcon, Image as ImageIcon, Eye, EyeOff } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const Route = createFileRoute("/_authenticated/submit")({
@@ -30,7 +29,7 @@ function SubmitPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState<CategoryValue | "">("");
-  const [anonymous, setAnonymous] = useState(false);
+  const [visibility, setVisibility] = useState<"public" | "private">("public");
   const [address, setAddress] = useState("");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [media, setMedia] = useState<UploadedMedia[]>([]);
@@ -99,46 +98,15 @@ function SubmitPage() {
     const { data: sla } = await supabase.from("sla_configurations").select("hours_to_resolve").eq("category", finalCategory).maybeSingle();
     const slaDue = sla ? new Date(Date.now() + sla.hours_to_resolve * 3600 * 1000).toISOString() : null;
 
-    // Duplicate detection: same category within ~120m in last 30 days
-    let duplicateOf: string | null = null;
-    if (coords) {
-      const d = 0.0011; // ~120m bounding box
-      const since = new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString();
-      const { data: dupes } = await supabase
-        .from("complaints")
-        .select("id, latitude, longitude")
-        .eq("category", finalCategory)
-        .gte("created_at", since)
-        .gte("latitude", coords.lat - d).lte("latitude", coords.lat + d)
-        .gte("longitude", coords.lng - d).lte("longitude", coords.lng + d)
-        .in("status", ["submitted", "assigned", "in_progress"])
-        .limit(1);
-      if (dupes && dupes[0]) duplicateOf = dupes[0].id;
-    }
-
-    if (duplicateOf) {
-      // Upvote existing complaint instead of creating duplicate
-      const { error: supErr } = await supabase
-        .from("complaint_supporters")
-        .insert({ complaint_id: duplicateOf, user_id: user.id });
-      setSubmitting(false);
-      if (supErr && !supErr.message.includes("duplicate")) {
-        toast.error(supErr.message);
-        return;
-      }
-      toast.success("A nearby report exists — we added your support.");
-      navigate({ to: "/complaints/$id", params: { id: duplicateOf } });
-      return;
-    }
-
     const { data: inserted, error } = await supabase
       .from("complaints")
       .insert({
         reporter_id: user.id,
-        is_anonymous: anonymous,
+        is_anonymous: false,
         title: title.trim(),
         description: description.trim(),
         category: finalCategory,
+        visibility,
         severity: ai?.severity ?? null,
         priority_score: ai?.priority_score ?? 50,
         priority_level: ai?.priority_level ?? "medium",
@@ -148,7 +116,7 @@ function SubmitPage() {
         address: address.trim() || null,
         ai_analysis: ai ?? null,
         sla_due_at: slaDue,
-      })
+      } as any)
       .select("id")
       .single();
 
@@ -160,11 +128,6 @@ function SubmitPage() {
       }));
       await supabase.from("complaint_media").insert(rows);
     }
-
-    await supabase.from("notifications").insert({
-      user_id: user.id, complaint_id: inserted.id,
-      title: "Complaint submitted", body: `Your report "${title.trim()}" has been received.`,
-    });
 
     setSubmitting(false);
     toast.success("Complaint submitted");
@@ -198,9 +161,19 @@ function SubmitPage() {
             </Select>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="addr">Address (optional)</Label>
-            <Input id="addr" maxLength={300} value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Street, landmark, neighborhood" />
+            <Label>Visibility</Label>
+            <Select value={visibility} onValueChange={(v) => setVisibility(v as "public" | "private")}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="public"><Eye className="mr-2 inline h-3.5 w-3.5" /> Public — visible city-wide</SelectItem>
+                <SelectItem value="private"><EyeOff className="mr-2 inline h-3.5 w-3.5" /> Private — only you and staff</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="addr">Address (optional)</Label>
+          <Input id="addr" maxLength={300} value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Street, landmark, neighborhood" />
         </div>
       </section>
 
@@ -257,27 +230,16 @@ function SubmitPage() {
       </section>
 
       <section className="space-y-4 rounded-xl border bg-card p-6">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <h2 className="font-semibold">Anonymous reporting</h2>
-            <p className="text-xs text-muted-foreground">Your identity will be hidden from officers, but admins can still verify.</p>
-          </div>
-          <Switch checked={anonymous} onCheckedChange={setAnonymous} />
-        </div>
-      </section>
-
-      <section className="space-y-4 rounded-xl border bg-card p-6">
         <div className="flex items-start justify-between gap-3">
           <div>
             <h2 className="font-semibold flex items-center gap-2"><Sparkles className="h-4 w-4 text-accent" /> AI preview</h2>
-            <p className="text-xs text-muted-foreground">Get an instant category, severity and priority assessment before you submit.</p>
+            <p className="text-xs text-muted-foreground">Get an instant category and priority assessment before you submit.</p>
           </div>
           <Button type="button" variant="outline" size="sm" onClick={runAI}>Analyze</Button>
         </div>
         {aiPreview && (
           <div className="grid gap-2 rounded-lg bg-secondary/40 p-4 text-sm">
             <div><span className="text-muted-foreground">Category:</span> <strong>{aiPreview.category}</strong></div>
-            <div><span className="text-muted-foreground">Severity:</span> <strong>{aiPreview.severity}</strong></div>
             <div><span className="text-muted-foreground">Priority:</span> <strong className="uppercase">{aiPreview.priority_level}</strong> ({aiPreview.priority_score}/100)</div>
             <div><span className="text-muted-foreground">Department:</span> <strong>{aiPreview.recommended_department}</strong></div>
             {aiPreview.summary && <div className="text-muted-foreground italic">{aiPreview.summary}</div>}

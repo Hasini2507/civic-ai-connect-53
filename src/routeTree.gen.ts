@@ -16,7 +16,6 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedSubmitRouteImport } from './routes/_authenticated/submit'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
-import { Route as AuthenticatedMapRouteImport } from './routes/_authenticated/map'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedComplaintsRouteImport } from './routes/_authenticated/complaints'
 import { Route as AuthenticatedComplaintsIdRouteImport } from './routes/_authenticated/complaints.$id'
@@ -55,11 +54,6 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedMapRoute = AuthenticatedMapRouteImport.update({
-  id: '/map',
-  path: '/map',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -84,7 +78,6 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/complaints': typeof AuthenticatedComplaintsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/map': typeof AuthenticatedMapRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/submit': typeof AuthenticatedSubmitRoute
   '/complaints/$id': typeof AuthenticatedComplaintsIdRoute
@@ -96,7 +89,6 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/complaints': typeof AuthenticatedComplaintsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/map': typeof AuthenticatedMapRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/submit': typeof AuthenticatedSubmitRoute
   '/complaints/$id': typeof AuthenticatedComplaintsIdRoute
@@ -110,7 +102,6 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/complaints': typeof AuthenticatedComplaintsRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/map': typeof AuthenticatedMapRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/submit': typeof AuthenticatedSubmitRoute
   '/_authenticated/complaints/$id': typeof AuthenticatedComplaintsIdRoute
@@ -124,7 +115,6 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/complaints'
     | '/dashboard'
-    | '/map'
     | '/profile'
     | '/submit'
     | '/complaints/$id'
@@ -136,7 +126,6 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/complaints'
     | '/dashboard'
-    | '/map'
     | '/profile'
     | '/submit'
     | '/complaints/$id'
@@ -149,7 +138,6 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/complaints'
     | '/_authenticated/dashboard'
-    | '/_authenticated/map'
     | '/_authenticated/profile'
     | '/_authenticated/submit'
     | '/_authenticated/complaints/$id'
@@ -214,13 +202,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/map': {
-      id: '/_authenticated/map'
-      path: '/map'
-      fullPath: '/map'
-      preLoaderRoute: typeof AuthenticatedMapRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -262,7 +243,6 @@ const AuthenticatedComplaintsRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedComplaintsRoute: typeof AuthenticatedComplaintsRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedMapRoute: typeof AuthenticatedMapRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedSubmitRoute: typeof AuthenticatedSubmitRoute
 }
@@ -270,7 +250,6 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedComplaintsRoute: AuthenticatedComplaintsRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedMapRoute: AuthenticatedMapRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedSubmitRoute: AuthenticatedSubmitRoute,
 }
@@ -288,3 +267,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
