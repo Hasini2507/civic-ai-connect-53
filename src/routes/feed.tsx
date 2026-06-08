@@ -133,12 +133,10 @@ function FeedPage() {
           <CardContent className="p-0">
             <Suspense fallback={<Skeleton className="h-[420px] w-full" />}>
               <ClientOnly fallback={<Skeleton className="h-[420px] w-full" />}>
-                {() => (
-                  <PublicMap
-                    issues={mapIssues}
-                    onSelect={(id) => navigate({ to: "/complaints/$id", params: { id } })}
-                  />
-                )}
+                <PublicMap
+                  issues={mapIssues}
+                  onSelect={(id) => navigate({ to: "/complaints/$id", params: { id } })}
+                />
               </ClientOnly>
             </Suspense>
             <div className="flex flex-wrap items-center gap-4 border-t bg-muted/40 px-4 py-2 text-xs text-muted-foreground">
