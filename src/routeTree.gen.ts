@@ -21,6 +21,7 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedOfficerRouteImport } from './routes/_authenticated/officer'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedComplaintsRouteImport } from './routes/_authenticated/complaints'
+import { Route as AuthenticatedAlertsRouteImport } from './routes/_authenticated/alerts'
 import { Route as AuthenticatedComplaintsIdRouteImport } from './routes/_authenticated/complaints.$id'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 
@@ -83,6 +84,11 @@ const AuthenticatedComplaintsRoute = AuthenticatedComplaintsRouteImport.update({
   path: '/complaints',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAlertsRoute = AuthenticatedAlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedComplaintsIdRoute =
   AuthenticatedComplaintsIdRouteImport.update({
     id: '/$id',
@@ -101,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/feed': typeof FeedRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/alerts': typeof AuthenticatedAlertsRoute
   '/complaints': typeof AuthenticatedComplaintsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/officer': typeof AuthenticatedOfficerRoute
@@ -116,6 +123,7 @@ export interface FileRoutesByTo {
   '/feed': typeof FeedRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/alerts': typeof AuthenticatedAlertsRoute
   '/complaints': typeof AuthenticatedComplaintsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/officer': typeof AuthenticatedOfficerRoute
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/feed': typeof FeedRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/alerts': typeof AuthenticatedAlertsRoute
   '/_authenticated/complaints': typeof AuthenticatedComplaintsRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/officer': typeof AuthenticatedOfficerRoute
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/feed'
     | '/forgot-password'
     | '/reset-password'
+    | '/alerts'
     | '/complaints'
     | '/dashboard'
     | '/officer'
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
     | '/feed'
     | '/forgot-password'
     | '/reset-password'
+    | '/alerts'
     | '/complaints'
     | '/dashboard'
     | '/officer'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '/feed'
     | '/forgot-password'
     | '/reset-password'
+    | '/_authenticated/alerts'
     | '/_authenticated/complaints'
     | '/_authenticated/dashboard'
     | '/_authenticated/officer'
@@ -286,6 +298,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedComplaintsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/alerts': {
+      id: '/_authenticated/alerts'
+      path: '/alerts'
+      fullPath: '/alerts'
+      preLoaderRoute: typeof AuthenticatedAlertsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/complaints/$id': {
       id: '/_authenticated/complaints/$id'
       path: '/$id'
@@ -318,6 +337,7 @@ const AuthenticatedComplaintsRouteWithChildren =
   )
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAlertsRoute: typeof AuthenticatedAlertsRoute
   AuthenticatedComplaintsRoute: typeof AuthenticatedComplaintsRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedOfficerRoute: typeof AuthenticatedOfficerRoute
@@ -328,6 +348,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAlertsRoute: AuthenticatedAlertsRoute,
   AuthenticatedComplaintsRoute: AuthenticatedComplaintsRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedOfficerRoute: AuthenticatedOfficerRoute,
@@ -351,3 +372,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
