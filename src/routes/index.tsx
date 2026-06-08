@@ -26,6 +26,7 @@ function Landing() {
             <span className="font-semibold tracking-tight">CivicFlow</span>
           </div>
           <div className="flex items-center gap-2">
+            <Link to="/feed"><Button variant="ghost" size="sm">Public Issues</Button></Link>
             <Link to="/auth"><Button variant="ghost" size="sm">Sign in</Button></Link>
             <Link to="/auth" search={{ mode: "signup" } as never}>
               <Button size="sm">Get started</Button>
