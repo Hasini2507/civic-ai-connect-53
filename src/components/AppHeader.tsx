@@ -1,7 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Shield, LayoutDashboard, Plus, ListChecks, ClipboardList,
-  Users, Briefcase, User as UserIcon, LogOut,
+  Users, Briefcase, User as UserIcon, LogOut, Bell,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ const ALL_LINKS: NavLink[] = [
   { to: "/complaints", label: "My Reports", icon: ListChecks, roles: ["citizen"] },
   { to: "/officer", label: "Officer Queue", icon: ClipboardList, roles: ["officer"] },
   { to: "/supervisor", label: "Supervisor", icon: Briefcase, roles: ["supervisor", "engineer", "commissioner"] },
+  { to: "/alerts", label: "Alerts", icon: Bell },
   { to: "/admin/users", label: "Users", icon: Users, roles: ["admin"] },
 ];
 
