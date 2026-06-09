@@ -19,6 +19,7 @@ import { Route as AuthenticatedSupervisorRouteImport } from './routes/_authentic
 import { Route as AuthenticatedSubmitRouteImport } from './routes/_authenticated/submit'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedOfficerRouteImport } from './routes/_authenticated/officer'
+import { Route as AuthenticatedMunicipalityRouteImport } from './routes/_authenticated/municipality'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedComplaintsRouteImport } from './routes/_authenticated/complaints'
 import { Route as AuthenticatedAlertsRouteImport } from './routes/_authenticated/alerts'
@@ -74,6 +75,12 @@ const AuthenticatedOfficerRoute = AuthenticatedOfficerRouteImport.update({
   path: '/officer',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMunicipalityRoute =
+  AuthenticatedMunicipalityRouteImport.update({
+    id: '/municipality',
+    path: '/municipality',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -110,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/alerts': typeof AuthenticatedAlertsRoute
   '/complaints': typeof AuthenticatedComplaintsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/municipality': typeof AuthenticatedMunicipalityRoute
   '/officer': typeof AuthenticatedOfficerRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/submit': typeof AuthenticatedSubmitRoute
@@ -126,6 +134,7 @@ export interface FileRoutesByTo {
   '/alerts': typeof AuthenticatedAlertsRoute
   '/complaints': typeof AuthenticatedComplaintsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/municipality': typeof AuthenticatedMunicipalityRoute
   '/officer': typeof AuthenticatedOfficerRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/submit': typeof AuthenticatedSubmitRoute
@@ -144,6 +153,7 @@ export interface FileRoutesById {
   '/_authenticated/alerts': typeof AuthenticatedAlertsRoute
   '/_authenticated/complaints': typeof AuthenticatedComplaintsRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/municipality': typeof AuthenticatedMunicipalityRoute
   '/_authenticated/officer': typeof AuthenticatedOfficerRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/submit': typeof AuthenticatedSubmitRoute
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/alerts'
     | '/complaints'
     | '/dashboard'
+    | '/municipality'
     | '/officer'
     | '/profile'
     | '/submit'
@@ -178,6 +189,7 @@ export interface FileRouteTypes {
     | '/alerts'
     | '/complaints'
     | '/dashboard'
+    | '/municipality'
     | '/officer'
     | '/profile'
     | '/submit'
@@ -195,6 +207,7 @@ export interface FileRouteTypes {
     | '/_authenticated/alerts'
     | '/_authenticated/complaints'
     | '/_authenticated/dashboard'
+    | '/_authenticated/municipality'
     | '/_authenticated/officer'
     | '/_authenticated/profile'
     | '/_authenticated/submit'
@@ -284,6 +297,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOfficerRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/municipality': {
+      id: '/_authenticated/municipality'
+      path: '/municipality'
+      fullPath: '/municipality'
+      preLoaderRoute: typeof AuthenticatedMunicipalityRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -340,6 +360,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAlertsRoute: typeof AuthenticatedAlertsRoute
   AuthenticatedComplaintsRoute: typeof AuthenticatedComplaintsRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedMunicipalityRoute: typeof AuthenticatedMunicipalityRoute
   AuthenticatedOfficerRoute: typeof AuthenticatedOfficerRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedSubmitRoute: typeof AuthenticatedSubmitRoute
@@ -351,6 +372,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAlertsRoute: AuthenticatedAlertsRoute,
   AuthenticatedComplaintsRoute: AuthenticatedComplaintsRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedMunicipalityRoute: AuthenticatedMunicipalityRoute,
   AuthenticatedOfficerRoute: AuthenticatedOfficerRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedSubmitRoute: AuthenticatedSubmitRoute,
@@ -372,13 +394,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
