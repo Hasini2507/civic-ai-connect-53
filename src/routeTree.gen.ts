@@ -17,6 +17,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedSupervisorRouteImport } from './routes/_authenticated/supervisor'
 import { Route as AuthenticatedSubmitRouteImport } from './routes/_authenticated/submit'
+import { Route as AuthenticatedSmartEscalationRouteImport } from './routes/_authenticated/smart-escalation'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedOfficerRouteImport } from './routes/_authenticated/officer'
 import { Route as AuthenticatedMunicipalityRouteImport } from './routes/_authenticated/municipality'
@@ -65,6 +66,12 @@ const AuthenticatedSubmitRoute = AuthenticatedSubmitRouteImport.update({
   path: '/submit',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSmartEscalationRoute =
+  AuthenticatedSmartEscalationRouteImport.update({
+    id: '/smart-escalation',
+    path: '/smart-escalation',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -120,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/municipality': typeof AuthenticatedMunicipalityRoute
   '/officer': typeof AuthenticatedOfficerRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/smart-escalation': typeof AuthenticatedSmartEscalationRoute
   '/submit': typeof AuthenticatedSubmitRoute
   '/supervisor': typeof AuthenticatedSupervisorRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -137,6 +145,7 @@ export interface FileRoutesByTo {
   '/municipality': typeof AuthenticatedMunicipalityRoute
   '/officer': typeof AuthenticatedOfficerRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/smart-escalation': typeof AuthenticatedSmartEscalationRoute
   '/submit': typeof AuthenticatedSubmitRoute
   '/supervisor': typeof AuthenticatedSupervisorRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -156,6 +165,7 @@ export interface FileRoutesById {
   '/_authenticated/municipality': typeof AuthenticatedMunicipalityRoute
   '/_authenticated/officer': typeof AuthenticatedOfficerRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/smart-escalation': typeof AuthenticatedSmartEscalationRoute
   '/_authenticated/submit': typeof AuthenticatedSubmitRoute
   '/_authenticated/supervisor': typeof AuthenticatedSupervisorRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -175,6 +185,7 @@ export interface FileRouteTypes {
     | '/municipality'
     | '/officer'
     | '/profile'
+    | '/smart-escalation'
     | '/submit'
     | '/supervisor'
     | '/admin/users'
@@ -192,6 +203,7 @@ export interface FileRouteTypes {
     | '/municipality'
     | '/officer'
     | '/profile'
+    | '/smart-escalation'
     | '/submit'
     | '/supervisor'
     | '/admin/users'
@@ -210,6 +222,7 @@ export interface FileRouteTypes {
     | '/_authenticated/municipality'
     | '/_authenticated/officer'
     | '/_authenticated/profile'
+    | '/_authenticated/smart-escalation'
     | '/_authenticated/submit'
     | '/_authenticated/supervisor'
     | '/_authenticated/admin/users'
@@ -281,6 +294,13 @@ declare module '@tanstack/react-router' {
       path: '/submit'
       fullPath: '/submit'
       preLoaderRoute: typeof AuthenticatedSubmitRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/smart-escalation': {
+      id: '/_authenticated/smart-escalation'
+      path: '/smart-escalation'
+      fullPath: '/smart-escalation'
+      preLoaderRoute: typeof AuthenticatedSmartEscalationRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/profile': {
@@ -363,6 +383,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMunicipalityRoute: typeof AuthenticatedMunicipalityRoute
   AuthenticatedOfficerRoute: typeof AuthenticatedOfficerRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedSmartEscalationRoute: typeof AuthenticatedSmartEscalationRoute
   AuthenticatedSubmitRoute: typeof AuthenticatedSubmitRoute
   AuthenticatedSupervisorRoute: typeof AuthenticatedSupervisorRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
@@ -375,6 +396,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMunicipalityRoute: AuthenticatedMunicipalityRoute,
   AuthenticatedOfficerRoute: AuthenticatedOfficerRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedSmartEscalationRoute: AuthenticatedSmartEscalationRoute,
   AuthenticatedSubmitRoute: AuthenticatedSubmitRoute,
   AuthenticatedSupervisorRoute: AuthenticatedSupervisorRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
