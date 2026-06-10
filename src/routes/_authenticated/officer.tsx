@@ -17,7 +17,7 @@ function OfficerPage() {
   const { user, roles, departmentId } = Route.useRouteContext();
   const qc = useQueryClient();
 
-  const allowed = roles.includes("officer") || roles.includes("admin") || roles.includes("supervisor");
+  const allowed = roles.includes("officer") || roles.includes("admin");
 
   const { data: dept } = useQuery({
     queryKey: ["department", departmentId],
