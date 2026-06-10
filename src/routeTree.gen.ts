@@ -15,12 +15,10 @@ import { Route as FeedRouteImport } from './routes/feed'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedSupervisorRouteImport } from './routes/_authenticated/supervisor'
 import { Route as AuthenticatedSubmitRouteImport } from './routes/_authenticated/submit'
 import { Route as AuthenticatedSmartEscalationRouteImport } from './routes/_authenticated/smart-escalation'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedOfficerRouteImport } from './routes/_authenticated/officer'
-import { Route as AuthenticatedMunicipalityRouteImport } from './routes/_authenticated/municipality'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedComplaintsRouteImport } from './routes/_authenticated/complaints'
 import { Route as AuthenticatedAlertsRouteImport } from './routes/_authenticated/alerts'
@@ -56,11 +54,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedSupervisorRoute = AuthenticatedSupervisorRouteImport.update({
-  id: '/supervisor',
-  path: '/supervisor',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedSubmitRoute = AuthenticatedSubmitRouteImport.update({
   id: '/submit',
   path: '/submit',
@@ -82,12 +75,6 @@ const AuthenticatedOfficerRoute = AuthenticatedOfficerRouteImport.update({
   path: '/officer',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedMunicipalityRoute =
-  AuthenticatedMunicipalityRouteImport.update({
-    id: '/municipality',
-    path: '/municipality',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -124,12 +111,10 @@ export interface FileRoutesByFullPath {
   '/alerts': typeof AuthenticatedAlertsRoute
   '/complaints': typeof AuthenticatedComplaintsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/municipality': typeof AuthenticatedMunicipalityRoute
   '/officer': typeof AuthenticatedOfficerRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/smart-escalation': typeof AuthenticatedSmartEscalationRoute
   '/submit': typeof AuthenticatedSubmitRoute
-  '/supervisor': typeof AuthenticatedSupervisorRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/complaints/$id': typeof AuthenticatedComplaintsIdRoute
 }
@@ -142,12 +127,10 @@ export interface FileRoutesByTo {
   '/alerts': typeof AuthenticatedAlertsRoute
   '/complaints': typeof AuthenticatedComplaintsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/municipality': typeof AuthenticatedMunicipalityRoute
   '/officer': typeof AuthenticatedOfficerRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/smart-escalation': typeof AuthenticatedSmartEscalationRoute
   '/submit': typeof AuthenticatedSubmitRoute
-  '/supervisor': typeof AuthenticatedSupervisorRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/complaints/$id': typeof AuthenticatedComplaintsIdRoute
 }
@@ -162,12 +145,10 @@ export interface FileRoutesById {
   '/_authenticated/alerts': typeof AuthenticatedAlertsRoute
   '/_authenticated/complaints': typeof AuthenticatedComplaintsRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/municipality': typeof AuthenticatedMunicipalityRoute
   '/_authenticated/officer': typeof AuthenticatedOfficerRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/smart-escalation': typeof AuthenticatedSmartEscalationRoute
   '/_authenticated/submit': typeof AuthenticatedSubmitRoute
-  '/_authenticated/supervisor': typeof AuthenticatedSupervisorRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/complaints/$id': typeof AuthenticatedComplaintsIdRoute
 }
@@ -182,12 +163,10 @@ export interface FileRouteTypes {
     | '/alerts'
     | '/complaints'
     | '/dashboard'
-    | '/municipality'
     | '/officer'
     | '/profile'
     | '/smart-escalation'
     | '/submit'
-    | '/supervisor'
     | '/admin/users'
     | '/complaints/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -200,12 +179,10 @@ export interface FileRouteTypes {
     | '/alerts'
     | '/complaints'
     | '/dashboard'
-    | '/municipality'
     | '/officer'
     | '/profile'
     | '/smart-escalation'
     | '/submit'
-    | '/supervisor'
     | '/admin/users'
     | '/complaints/$id'
   id:
@@ -219,12 +196,10 @@ export interface FileRouteTypes {
     | '/_authenticated/alerts'
     | '/_authenticated/complaints'
     | '/_authenticated/dashboard'
-    | '/_authenticated/municipality'
     | '/_authenticated/officer'
     | '/_authenticated/profile'
     | '/_authenticated/smart-escalation'
     | '/_authenticated/submit'
-    | '/_authenticated/supervisor'
     | '/_authenticated/admin/users'
     | '/_authenticated/complaints/$id'
   fileRoutesById: FileRoutesById
@@ -282,13 +257,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/supervisor': {
-      id: '/_authenticated/supervisor'
-      path: '/supervisor'
-      fullPath: '/supervisor'
-      preLoaderRoute: typeof AuthenticatedSupervisorRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/submit': {
       id: '/_authenticated/submit'
       path: '/submit'
@@ -315,13 +283,6 @@ declare module '@tanstack/react-router' {
       path: '/officer'
       fullPath: '/officer'
       preLoaderRoute: typeof AuthenticatedOfficerRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/municipality': {
-      id: '/_authenticated/municipality'
-      path: '/municipality'
-      fullPath: '/municipality'
-      preLoaderRoute: typeof AuthenticatedMunicipalityRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
@@ -380,12 +341,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAlertsRoute: typeof AuthenticatedAlertsRoute
   AuthenticatedComplaintsRoute: typeof AuthenticatedComplaintsRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedMunicipalityRoute: typeof AuthenticatedMunicipalityRoute
   AuthenticatedOfficerRoute: typeof AuthenticatedOfficerRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedSmartEscalationRoute: typeof AuthenticatedSmartEscalationRoute
   AuthenticatedSubmitRoute: typeof AuthenticatedSubmitRoute
-  AuthenticatedSupervisorRoute: typeof AuthenticatedSupervisorRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
 }
 
@@ -393,12 +352,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAlertsRoute: AuthenticatedAlertsRoute,
   AuthenticatedComplaintsRoute: AuthenticatedComplaintsRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedMunicipalityRoute: AuthenticatedMunicipalityRoute,
   AuthenticatedOfficerRoute: AuthenticatedOfficerRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedSmartEscalationRoute: AuthenticatedSmartEscalationRoute,
   AuthenticatedSubmitRoute: AuthenticatedSubmitRoute,
-  AuthenticatedSupervisorRoute: AuthenticatedSupervisorRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
 }
 
@@ -416,3 +373,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

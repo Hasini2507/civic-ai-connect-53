@@ -72,22 +72,49 @@ export function statusLabel(v: string) {
 export const ROLE_LABELS: Record<string, string> = {
   citizen: "Citizen",
   officer: "Department Officer",
-  supervisor: "Supervisor",
-  engineer: "Engineer",
-  commissioner: "Commissioner",
   admin: "Admin",
 };
 
-export const ROLE_OPTIONS = [
-  "citizen",
-  "officer",
-  "supervisor",
-  "engineer",
-  "commissioner",
-  "admin",
-] as const;
+export const ROLE_OPTIONS = ["citizen", "officer", "admin"] as const;
 
 export type AppRole = (typeof ROLE_OPTIONS)[number];
+
+/** Rule-based prediction of next recommended action for a complaint. */
+export function predictNextAction(c: {
+  status: string;
+  sla_due_at?: string | null;
+  created_at?: string;
+  assigned_officer_id?: string | null;
+  priority_level?: string;
+}): { action: string; reason: string; urgency: "low" | "medium" | "high" } {
+  const now = Date.now();
+  const slaMs = c.sla_due_at ? new Date(c.sla_due_at).getTime() - now : null;
+  const overdue = slaMs !== null && slaMs < 0;
+  const ageHours = c.created_at ? (now - new Date(c.created_at).getTime()) / 3600000 : 0;
+  const critical = c.priority_level === "critical" || c.priority_level === "high";
+
+  if (["resolved", "closed", "verified"].includes(c.status))
+    return { action: "Await citizen verification / close out", reason: "Work is complete.", urgency: "low" };
+
+  if (c.status === "submitted") {
+    if (critical || ageHours > 4)
+      return { action: "Triage & assign officer now", reason: critical ? "High priority report." : "Awaiting review > 4h.", urgency: "high" };
+    return { action: "Review intake within 4h", reason: "Standard SLA for new reports.", urgency: "medium" };
+  }
+  if (c.status === "under_review")
+    return { action: "Assign to department officer", reason: "Reviewed but unassigned.", urgency: critical ? "high" : "medium" };
+  if (c.status === "assigned" && !c.assigned_officer_id)
+    return { action: "Confirm officer assignment", reason: "Status assigned but no officer set.", urgency: "high" };
+  if (c.status === "assigned")
+    return { action: "Begin field work", reason: "Officer assigned; move to in-progress.", urgency: overdue ? "high" : "medium" };
+  if (c.status === "in_progress") {
+    if (overdue) return { action: "Escalate — SLA breached", reason: "Work past SLA deadline.", urgency: "high" };
+    return { action: "Complete repair & upload proof", reason: "Work in flight.", urgency: "medium" };
+  }
+  if (c.status === "waiting_for_verification")
+    return { action: "Request citizen confirmation", reason: "Awaiting verification of repair.", urgency: "low" };
+  return { action: "Review and act", reason: "Status needs attention.", urgency: "medium" };
+}
 
 /** Officer-allowed transitions (used in officer UI). */
 export const OFFICER_NEXT_STATUS: Record<string, string[]> = {
