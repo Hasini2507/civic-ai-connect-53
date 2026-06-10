@@ -1,7 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Shield, LayoutDashboard, Plus, ListChecks, ClipboardList,
-  Users, Briefcase, User as UserIcon, LogOut, Bell, Building2, Flame,
+  Users, User as UserIcon, LogOut, Bell, Flame,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -13,15 +13,16 @@ import { ROLE_LABELS } from "@/lib/civic";
 type NavLink = { to: string; label: string; icon: any; roles?: AppRole[] };
 
 const ALL_LINKS: NavLink[] = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  // Citizen
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, roles: ["citizen"] },
   { to: "/submit", label: "Report", icon: Plus, roles: ["citizen"] },
   { to: "/complaints", label: "My Reports", icon: ListChecks, roles: ["citizen"] },
-  { to: "/officer", label: "Officer Queue", icon: ClipboardList, roles: ["officer"] },
-  { to: "/municipality", label: "Municipality", icon: Building2, roles: ["officer", "supervisor", "admin"] },
-  { to: "/supervisor", label: "Supervisor", icon: Briefcase, roles: ["supervisor", "engineer", "commissioner"] },
-  { to: "/alerts", label: "Alerts", icon: Bell },
-  { to: "/smart-escalation", label: "Smart Escalation", icon: Flame },
-  { to: "/admin/users", label: "Users", icon: Users, roles: ["admin"] },
+  { to: "/alerts", label: "Alerts", icon: Bell, roles: ["citizen"] },
+  // Officer
+  { to: "/officer", label: "Dashboard", icon: ClipboardList, roles: ["officer"] },
+  { to: "/smart-escalation", label: "Smart Escalation", icon: Flame, roles: ["officer", "admin"] },
+  // Admin
+  { to: "/admin/users", label: "Officers", icon: Users, roles: ["admin"] },
 ];
 
 function visibleFor(roles: AppRole[]): NavLink[] {
@@ -34,9 +35,7 @@ export function AppHeader() {
   const { roles } = AuthRoute.useRouteContext();
   const links = visibleFor(roles);
   const primary =
-    (["admin", "commissioner", "engineer", "supervisor", "officer", "citizen"] as AppRole[]).find((r) =>
-      roles.includes(r),
-    ) ?? "citizen";
+    (["admin", "officer", "citizen"] as AppRole[]).find((r) => roles.includes(r)) ?? "citizen";
 
   async function signOut() {
     await supabase.auth.signOut();

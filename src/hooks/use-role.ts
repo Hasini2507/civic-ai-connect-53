@@ -42,9 +42,7 @@ export function useRole(userId: string | null | undefined): RoleInfo {
   const has = (r: AppRole) => roles.includes(r);
   const isStaff = roles.some((r) => r !== "citizen");
   const primary: AppRole =
-    (["admin", "commissioner", "engineer", "supervisor", "officer"] as AppRole[]).find((r) =>
-      roles.includes(r),
-    ) ?? "citizen";
+    (["admin", "officer"] as AppRole[]).find((r) => roles.includes(r)) ?? "citizen";
 
   return { loading, roles, departmentId, has, isStaff, primary };
 }

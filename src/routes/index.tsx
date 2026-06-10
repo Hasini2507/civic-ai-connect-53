@@ -64,7 +64,7 @@ function Landing() {
           {[
             { icon: Brain, title: "AI triage", body: "Each complaint is automatically classified, scored for urgency and routed to the correct department." },
             { icon: MapPin, title: "Geo-aware", body: "GPS-tagged reports power live maps, hotspot detection and duplicate consolidation." },
-            { icon: Zap, title: "SLA tracking", body: "Time-bound resolution with automatic escalation to supervisors, engineers and commissioners." },
+            { icon: Zap, title: "SLA tracking", body: "Time-bound resolution with automatic escalation when officers miss deadlines." },
           ].map((f) => (
             <div key={f.title} className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="grid h-10 w-10 place-items-center rounded-lg bg-accent/15 text-accent">
