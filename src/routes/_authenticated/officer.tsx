@@ -82,70 +82,104 @@ function OfficerPage() {
   const overdue = complaints?.filter((c) => c.sla_due_at && new Date(c.sla_due_at) < new Date() && !["resolved", "closed"].includes(c.status)).length ?? 0;
   const resolved = complaints?.filter((c) => ["resolved", "closed"].includes(c.status)).length ?? 0;
 
+  const pendingList = (complaints ?? []).filter((c) => ["submitted", "under_review", "assigned"].includes(c.status));
+  const ongoingList = (complaints ?? []).filter((c) => ["in_progress", "waiting_for_verification"].includes(c.status));
+  const resolvedList = (complaints ?? []).filter((c) => ["resolved", "closed", "verified"].includes(c.status));
+
+  // Priority sort helper: overdue first, then priority, then age.
+  const PRIO_RANK: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
+  const sortByUrgency = (a: any, b: any) => {
+    const ao = a.sla_due_at && new Date(a.sla_due_at) < new Date() ? 1 : 0;
+    const bo = b.sla_due_at && new Date(b.sla_due_at) < new Date() ? 1 : 0;
+    if (ao !== bo) return bo - ao;
+    const pr = (PRIO_RANK[b.priority_level] ?? 0) - (PRIO_RANK[a.priority_level] ?? 0);
+    if (pr !== 0) return pr;
+    return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+  };
+
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-3xl font-bold tracking-tight">Officer Queue</h1>
-        <p className="text-sm text-muted-foreground">{dept?.name ?? "Your department"} — prioritised by AI score and age.</p>
+        <h1 className="text-3xl font-bold tracking-tight">Officer Dashboard</h1>
+        <p className="text-sm text-muted-foreground">{dept?.name ?? "Your department"} — AI-prioritised, real-time.</p>
       </header>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <Stat icon={Briefcase} label="Active" value={open} />
+        <Stat icon={Briefcase} label="Pending" value={pendingList.length} />
         <Stat icon={AlertTriangle} label="SLA overdue" value={overdue} tone="destructive" />
         <Stat icon={CheckCircle2} label="Resolved" value={resolved} tone="success" />
       </div>
 
-      <section className="rounded-xl border bg-card">
-        <div className="border-b p-4">
-          <h2 className="font-semibold">Task queue</h2>
-          <p className="text-xs text-muted-foreground">Highest priority first.</p>
-        </div>
-        <div className="divide-y">
-          {(complaints ?? []).length === 0 && (
-            <div className="p-8 text-center text-sm text-muted-foreground">No complaints in your queue.</div>
-          )}
-          {(complaints ?? []).map((c) => {
-            const nexts = OFFICER_NEXT_STATUS[c.status] ?? [];
-            const slaRem = c.sla_due_at ? Math.round((new Date(c.sla_due_at).getTime() - Date.now()) / 3600000) : null;
-            return (
-              <div key={c.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
-                <Link to="/complaints/$id" params={{ id: c.id }} className="min-w-0 flex-1 hover:text-accent">
-                  <div className="truncate font-medium">{c.title}</div>
-                  <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                    <span>{categoryLabel(c.category)}</span>
-                    <span>·</span>
-                    <span>{new Date(c.created_at).toLocaleDateString()}</span>
-                    {slaRem !== null && (
-                      <span className={slaRem < 0 ? "text-destructive font-medium" : "text-success"}>
-                        <Clock className="mr-0.5 inline h-3 w-3" />
-                        {slaRem < 0 ? `${Math.abs(slaRem)}h overdue` : `${slaRem}h left`}
-                      </span>
-                    )}
+      <QueueSection title="Pending complaints" desc="Awaiting triage or assignment." items={pendingList.sort(sortByUrgency)} updateStatus={updateStatus} />
+      <QueueSection title="On-going issues" desc="Work in progress." items={ongoingList.sort(sortByUrgency)} updateStatus={updateStatus} />
+      <QueueSection title="Resolved" desc="Recently completed work." items={resolvedList} updateStatus={updateStatus} muted />
+    </div>
+  );
+}
+
+function QueueSection({ title, desc, items, updateStatus, muted }: { title: string; desc: string; items: any[]; updateStatus: any; muted?: boolean }) {
+  return (
+    <section className={`rounded-xl border bg-card ${muted ? "opacity-95" : ""}`}>
+      <div className="border-b p-4">
+        <h2 className="font-semibold">{title} <span className="ml-2 text-xs font-normal text-muted-foreground">({items.length})</span></h2>
+        <p className="text-xs text-muted-foreground">{desc}</p>
+      </div>
+      <div className="divide-y">
+        {items.length === 0 && (
+          <div className="p-6 text-center text-sm text-muted-foreground">Nothing here.</div>
+        )}
+        {items.map((c) => {
+          const nexts = OFFICER_NEXT_STATUS[c.status] ?? [];
+          const slaRem = c.sla_due_at ? Math.round((new Date(c.sla_due_at).getTime() - Date.now()) / 3600000) : null;
+          const pred = predictNextAction(c);
+          const urgTone = pred.urgency === "high" ? "text-destructive" : pred.urgency === "medium" ? "text-warning-foreground" : "text-muted-foreground";
+          return (
+            <div key={c.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-start">
+              <Link to="/complaints/$id" params={{ id: c.id }} className="min-w-0 flex-1 hover:text-accent">
+                <div className="truncate font-medium">{c.title}</div>
+                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                  <span>{categoryLabel(c.category)}</span>
+                  <span>·</span>
+                  <span>{new Date(c.created_at).toLocaleDateString()}</span>
+                  {slaRem !== null && (
+                    <span className={slaRem < 0 ? "text-destructive font-medium" : "text-success"}>
+                      <Clock className="mr-0.5 inline h-3 w-3" />
+                      {slaRem < 0 ? `${Math.abs(slaRem)}h overdue` : `${slaRem}h left`}
+                    </span>
+                  )}
+                </div>
+                {!muted && (
+                  <div className={`mt-1.5 text-xs ${urgTone}`}>
+                    <span className="font-medium">AI suggests:</span> {pred.action} <span className="text-muted-foreground">— {pred.reason}</span>
                   </div>
-                </Link>
+                )}
+              </Link>
+              <div className="flex flex-col items-end gap-2">
                 <div className="flex items-center gap-2">
                   <PriorityBadge level={c.priority_level} />
                   <StatusBadge status={c.status} />
                 </div>
-                <div className="flex flex-wrap gap-1">
-                  {nexts.map((s) => (
-                    <Button
-                      key={s}
-                      size="sm"
-                      variant="outline"
-                      disabled={updateStatus.isPending}
-                      onClick={() => updateStatus.mutate({ id: c.id, status: s })}
-                    >
-                      {statusLabel(s)}
-                    </Button>
-                  ))}
-                </div>
+                {nexts.length > 0 && (
+                  <div className="flex flex-wrap justify-end gap-1">
+                    {nexts.map((s) => (
+                      <Button
+                        key={s}
+                        size="sm"
+                        variant="outline"
+                        disabled={updateStatus.isPending}
+                        onClick={() => updateStatus.mutate({ id: c.id, status: s })}
+                      >
+                        {statusLabel(s)}
+                      </Button>
+                    ))}
+                  </div>
+                )}
               </div>
-            );
-          })}
-        </div>
-      </section>
-    </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
