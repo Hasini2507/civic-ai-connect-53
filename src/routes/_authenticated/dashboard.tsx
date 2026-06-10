@@ -17,12 +17,10 @@ function Dashboard() {
   const { user, roles } = Route.useRouteContext();
   const navigate = useNavigate();
 
-  // Role-aware landing
+  // Role-aware landing — strict isolation per category.
   useEffect(() => {
     if (roles.includes("admin")) navigate({ to: "/admin/users", replace: true });
     else if (roles.includes("officer")) navigate({ to: "/officer", replace: true });
-    else if (roles.some((r: string) => ["supervisor", "engineer", "commissioner"].includes(r)))
-      navigate({ to: "/supervisor", replace: true });
   }, [roles, navigate]);
 
   const { data: mine } = useQuery({
