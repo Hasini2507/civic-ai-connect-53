@@ -195,6 +195,12 @@ function AdminUsersPage() {
         </table>
       </section>
 
+      {/* Department-wise workload */}
+      <DepartmentWorkload depts={depts ?? []} complaints={workload ?? []} officers={officers} />
+
+      {/* AI Smart Schedule across departments */}
+      <AdminSmartSchedule complaints={workload ?? []} depts={depts ?? []} />
+
       {/* User role management */}
       <section className="overflow-hidden rounded-xl border bg-card">
         <div className="flex flex-wrap items-end justify-between gap-3 border-b p-4">
