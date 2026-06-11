@@ -66,7 +66,7 @@ function AdminUsersPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("complaints")
-        .select("id,status,assigned_officer_id,department_id,sla_due_at,priority_level,created_at");
+        .select("id,title,status,assigned_officer_id,department_id,sla_due_at,priority_level,category,created_at,latitude,longitude,address");
       if (error) throw error;
       return data ?? [];
     },
