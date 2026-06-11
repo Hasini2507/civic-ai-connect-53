@@ -298,3 +298,106 @@ function Stat({ icon: Icon, label, value, tone }: { icon: any; label: string; va
     </div>
   );
 }
+
+function DepartmentWorkload({ depts, complaints, officers }: { depts: any[]; complaints: any[]; officers: any[] }) {
+  const officersByDept = new Map<string, number>();
+  officers.forEach((o) => {
+    if (!o.department_id) return;
+    officersByDept.set(o.department_id, (officersByDept.get(o.department_id) ?? 0) + 1);
+  });
+  const rows = depts.map((d) => {
+    const list = complaints.filter((c) => c.department_id === d.id);
+    const active = list.filter((c) => !["resolved", "closed", "verified"].includes(c.status)).length;
+    const overdue = list.filter((c) => c.sla_due_at && new Date(c.sla_due_at) < new Date() && !["resolved", "closed", "verified"].includes(c.status)).length;
+    const resolved = list.filter((c) => ["resolved", "closed", "verified"].includes(c.status)).length;
+    const unassigned = list.filter((c) => !c.assigned_officer_id && !["resolved", "closed", "verified"].includes(c.status)).length;
+    return { d, active, overdue, resolved, unassigned, officers: officersByDept.get(d.id) ?? 0 };
+  }).sort((a, b) => b.overdue - a.overdue || b.active - a.active);
+
+  return (
+    <section className="overflow-hidden rounded-xl border bg-card">
+      <div className="border-b p-4">
+        <h2 className="font-semibold">Department-wise work assignment</h2>
+        <p className="text-xs text-muted-foreground">Live status of every department's queue and crew.</p>
+      </div>
+      <table className="w-full text-sm">
+        <thead className="bg-secondary/50 text-left text-xs uppercase text-muted-foreground">
+          <tr>
+            <th className="p-3">Department</th>
+            <th className="p-3 text-right">Officers</th>
+            <th className="p-3 text-right">Unassigned</th>
+            <th className="p-3 text-right">Active</th>
+            <th className="p-3 text-right">Overdue</th>
+            <th className="p-3 text-right">Resolved</th>
+            <th className="p-3">Health</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y">
+          {rows.length === 0 && (
+            <tr><td colSpan={7} className="p-8 text-center text-muted-foreground">No departments yet.</td></tr>
+          )}
+          {rows.map((r) => {
+            const health = r.overdue > 0 ? "At risk" : r.unassigned > 0 ? "Needs assignment" : r.active > 0 ? "Running" : "Idle";
+            const tone = r.overdue > 0 ? "bg-destructive/15 text-destructive" : r.unassigned > 0 ? "bg-warning/20 text-foreground" : "bg-success/15 text-foreground";
+            return (
+              <tr key={r.d.id}>
+                <td className="p-3"><div className="font-medium">{r.d.name}</div></td>
+                <td className="p-3 text-right tabular-nums">{r.officers}</td>
+                <td className={`p-3 text-right tabular-nums ${r.unassigned > 0 ? "font-semibold text-warning-foreground" : ""}`}>{r.unassigned}</td>
+                <td className="p-3 text-right tabular-nums">{r.active}</td>
+                <td className={`p-3 text-right tabular-nums ${r.overdue > 0 ? "font-semibold text-destructive" : ""}`}>{r.overdue}</td>
+                <td className="p-3 text-right tabular-nums">{r.resolved}</td>
+                <td className="p-3"><span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${tone}`}>{health}</span></td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </section>
+  );
+}
+
+function AdminSmartSchedule({ complaints, depts }: { complaints: any[]; depts: any[] }) {
+  const scheduled = scheduleActions(complaints).slice(0, 15);
+  const deptName = new Map(depts.map((d) => [d.id, d.name]));
+  if (scheduled.length === 0) return null;
+  return (
+    <section className="rounded-xl border bg-card">
+      <div className="border-b p-4">
+        <h2 className="flex items-center gap-2 font-semibold">
+          <Sparkles className="h-4 w-4 text-primary" /> AI Smart Schedule — city-wide
+        </h2>
+        <p className="text-xs text-muted-foreground">
+          Sequenced to prevent material loss and minimise public disruption (e.g. lay pipes before paving roads).
+        </p>
+      </div>
+      <ol className="divide-y">
+        {scheduled.map((s) => (
+          <li key={s.complaint.id} className="flex items-start gap-3 p-3">
+            <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary/10 font-semibold text-primary">
+              {s.order}
+            </div>
+            <div className="min-w-0 flex-1">
+              <Link to="/complaints/$id" params={{ id: s.complaint.id }} className="block truncate font-medium hover:text-accent">
+                {s.complaint.title}
+              </Link>
+              <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <span>{categoryLabel(s.complaint.category)}</span>
+                <span>·</span>
+                <span>{statusLabel(s.complaint.status)}</span>
+                {s.complaint.department_id && <span>· {deptName.get(s.complaint.department_id) ?? "—"}</span>}
+                {s.complaint.address && (
+                  <span className="inline-flex items-center gap-1">· <MapPin className="h-3 w-3" />{s.complaint.address}</span>
+                )}
+                {s.groupSize > 1 && (
+                  <span className="rounded-full border bg-secondary px-1.5 py-0.5 text-[10px]">Cluster of {s.groupSize}</span>
+                )}
+              </div>
+              <p className="mt-1 text-xs text-primary/90">{s.reason}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
