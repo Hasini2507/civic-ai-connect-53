@@ -4,7 +4,9 @@ import { toast } from "sonner";
 import { Briefcase, AlertTriangle, Clock, CheckCircle2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { StatusBadge, PriorityBadge } from "@/components/StatusBadge";
-import { categoryLabel, OFFICER_NEXT_STATUS, statusLabel, predictNextAction } from "@/lib/civic";
+import { categoryLabel, OFFICER_NEXT_STATUS, statusLabel, predictNextAction, scheduleActions } from "@/lib/civic";
+import { PriorityBadge as _Prio } from "@/components/StatusBadge";
+import { Sparkles, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRealtime } from "@/hooks/use-realtime";
 
