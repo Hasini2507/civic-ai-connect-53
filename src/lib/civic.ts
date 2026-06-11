@@ -126,3 +126,115 @@ export const OFFICER_NEXT_STATUS: Record<string, string[]> = {
   resolved: ["closed"],
   closed: [],
 };
+
+/**
+ * Smart scheduler — orders pending actions to minimise rework / public inconvenience.
+ *
+ * Rule: when multiple complaints sit on the same street/area, underground or
+ * sub-surface work (water, sewerage/drainage, electrical cabling, manholes)
+ * MUST happen before resurfacing work (potholes, road damage). Otherwise the
+ * newly laid road has to be dug up again — material loss, doubled labour and
+ * extra public disruption.
+ *
+ * Within the same precedence tier we sort by priority then age, so the most
+ * urgent issue in each tier is acted on first.
+ */
+const CATEGORY_PRECEDENCE: Record<string, number> = {
+  // 1 = must be done first (underground / safety)
+  open_manhole: 1,
+  water_leakage: 1,
+  drainage_blockage: 1,
+  // 2 = sub-surface utilities / wiring
+  streetlight_failure: 2,
+  traffic_signal_damage: 2,
+  // 3 = surface
+  pothole: 3,
+  road_damage: 3,
+  // 4 = above-ground misc
+  garbage_overflow: 4,
+  fallen_tree: 4,
+  public_infrastructure_damage: 4,
+  other: 5,
+};
+
+function areaKey(c: { latitude?: number | null; longitude?: number | null; address?: string | null }) {
+  if (c.latitude != null && c.longitude != null) {
+    // ~300m bucket — close enough that one crew + one road-closure handles all of it
+    return `${c.latitude.toFixed(2)}:${c.longitude.toFixed(2)}`;
+  }
+  return (c.address ?? "unknown").trim().toLowerCase().slice(0, 40) || "unknown";
+}
+
+export type ScheduledItem<T> = {
+  complaint: T;
+  order: number;
+  groupKey: string;
+  groupSize: number;
+  reason: string;
+};
+
+export function scheduleActions<T extends {
+  id: string;
+  status: string;
+  category: string;
+  priority_level?: string;
+  created_at?: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  address?: string | null;
+}>(complaints: T[]): ScheduledItem<T>[] {
+  const PRIO: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
+  const open = complaints.filter((c) => !["resolved", "closed", "verified"].includes(c.status));
+
+  // group by area
+  const groups = new Map<string, T[]>();
+  for (const c of open) {
+    const k = areaKey(c);
+    const arr = groups.get(k) ?? [];
+    arr.push(c);
+    groups.set(k, arr);
+  }
+
+  const out: ScheduledItem<T>[] = [];
+  // sort groups: bigger conflict clusters first, then by max priority inside
+  const sortedGroups = [...groups.entries()].sort((a, b) => {
+    if (b[1].length !== a[1].length) return b[1].length - a[1].length;
+    const ap = Math.max(...a[1].map((c) => PRIO[c.priority_level ?? "medium"] ?? 2));
+    const bp = Math.max(...b[1].map((c) => PRIO[c.priority_level ?? "medium"] ?? 2));
+    return bp - ap;
+  });
+
+  let order = 1;
+  for (const [key, items] of sortedGroups) {
+    // sort inside group by precedence (dig first), then priority, then age
+    const sorted = [...items].sort((a, b) => {
+      const ap = CATEGORY_PRECEDENCE[a.category] ?? 5;
+      const bp = CATEGORY_PRECEDENCE[b.category] ?? 5;
+      if (ap !== bp) return ap - bp;
+      const pr = (PRIO[b.priority_level ?? "medium"] ?? 0) - (PRIO[a.priority_level ?? "medium"] ?? 0);
+      if (pr !== 0) return pr;
+      return new Date(a.created_at ?? 0).getTime() - new Date(b.created_at ?? 0).getTime();
+    });
+
+    sorted.forEach((c, idx) => {
+      const prev = idx > 0 ? sorted[idx - 1] : null;
+      let reason: string;
+      if (items.length === 1) {
+        reason = "Standalone job — priority order.";
+      } else if (idx === 0) {
+        const tier = CATEGORY_PRECEDENCE[c.category] ?? 5;
+        reason =
+          tier <= 2
+            ? "Do underground/utility work first — re-paving after is cheaper than re-digging."
+            : "Highest-priority job in this area.";
+      } else if (prev && (CATEGORY_PRECEDENCE[prev.category] ?? 5) < (CATEGORY_PRECEDENCE[c.category] ?? 5)) {
+        reason = `Wait for ${categoryLabel(prev.category)} to finish — avoids redoing this work.`;
+      } else {
+        reason = "Same crew can handle in sequence — minimises road closures.";
+      }
+      out.push({ complaint: c, order: order++, groupKey: key, groupSize: items.length, reason });
+    });
+  }
+  return out;
+}
+

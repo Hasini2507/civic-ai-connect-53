@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Briefcase, AlertTriangle, Clock, CheckCircle2 } from "lucide-react";
+import { Briefcase, AlertTriangle, Clock, CheckCircle2, Sparkles, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { StatusBadge, PriorityBadge } from "@/components/StatusBadge";
-import { categoryLabel, OFFICER_NEXT_STATUS, statusLabel, predictNextAction } from "@/lib/civic";
+import { categoryLabel, OFFICER_NEXT_STATUS, statusLabel, predictNextAction, scheduleActions } from "@/lib/civic";
 import { Button } from "@/components/ui/button";
 import { useRealtime } from "@/hooks/use-realtime";
 
@@ -110,10 +110,63 @@ function OfficerPage() {
         <Stat icon={CheckCircle2} label="Resolved" value={resolved} tone="success" />
       </div>
 
+      <SmartSchedule complaints={complaints ?? []} />
+
       <QueueSection title="Pending complaints" desc="Awaiting triage or assignment." items={pendingList.sort(sortByUrgency)} updateStatus={updateStatus} />
       <QueueSection title="On-going issues" desc="Work in progress." items={ongoingList.sort(sortByUrgency)} updateStatus={updateStatus} />
       <QueueSection title="Resolved" desc="Recently completed work." items={resolvedList} updateStatus={updateStatus} muted />
     </div>
+  );
+}
+
+function SmartSchedule({ complaints }: { complaints: any[] }) {
+  const scheduled = scheduleActions(complaints).slice(0, 12);
+  if (scheduled.length === 0) return null;
+  return (
+    <section className="rounded-xl border bg-card">
+      <div className="flex items-center justify-between border-b p-4">
+        <div>
+          <h2 className="flex items-center gap-2 font-semibold">
+            <Sparkles className="h-4 w-4 text-primary" /> AI Smart Schedule
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            Ordered to avoid rework — underground utility jobs run before resurfacing in the same area.
+          </p>
+        </div>
+        <span className="hidden rounded-full border bg-secondary px-2 py-0.5 text-xs text-muted-foreground sm:inline">
+          {scheduled.length} actions
+        </span>
+      </div>
+      <ol className="divide-y">
+        {scheduled.map((s) => (
+          <li key={s.complaint.id} className="flex items-start gap-3 p-3">
+            <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary/10 font-semibold text-primary">
+              {s.order}
+            </div>
+            <div className="min-w-0 flex-1">
+              <Link to="/complaints/$id" params={{ id: s.complaint.id }} className="block truncate font-medium hover:text-accent">
+                {s.complaint.title}
+              </Link>
+              <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <span>{categoryLabel(s.complaint.category)}</span>
+                {s.complaint.address && (
+                  <span className="inline-flex items-center gap-1">
+                    <MapPin className="h-3 w-3" />{s.complaint.address}
+                  </span>
+                )}
+                {s.groupSize > 1 && (
+                  <span className="rounded-full border bg-secondary px-1.5 py-0.5 text-[10px]">
+                    Cluster of {s.groupSize}
+                  </span>
+                )}
+              </div>
+              <p className="mt-1 text-xs text-primary/90">{s.reason}</p>
+            </div>
+            <PriorityBadge level={s.complaint.priority_level} />
+          </li>
+        ))}
+      </ol>
+    </section>
   );
 }
 
