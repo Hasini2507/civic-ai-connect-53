@@ -2,13 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ShieldAlert, UserCog, Users, Briefcase, CheckCircle2, AlertTriangle, Flame } from "lucide-react";
+import { ShieldAlert, UserCog, Users, Briefcase, CheckCircle2, AlertTriangle, Flame, Sparkles, MapPin } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ROLE_OPTIONS, ROLE_LABELS, type AppRole } from "@/lib/civic";
+import { ROLE_OPTIONS, ROLE_LABELS, type AppRole, scheduleActions, categoryLabel, statusLabel } from "@/lib/civic";
 import { useRealtime } from "@/hooks/use-realtime";
 
 export const Route = createFileRoute("/_authenticated/admin/users")({
