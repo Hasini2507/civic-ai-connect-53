@@ -6,7 +6,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { StatusBadge, PriorityBadge } from "@/components/StatusBadge";
 import { categoryLabel, OFFICER_NEXT_STATUS, statusLabel, predictNextAction, scheduleActions } from "@/lib/civic";
 import { Button } from "@/components/ui/button";
-import { Button } from "@/components/ui/button";
 import { useRealtime } from "@/hooks/use-realtime";
 
 export const Route = createFileRoute("/_authenticated/officer")({
