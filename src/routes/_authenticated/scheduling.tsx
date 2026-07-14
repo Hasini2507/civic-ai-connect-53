@@ -17,7 +17,7 @@ import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@
 import {
   Table, TableHeader, TableBody, TableHead, TableRow, TableCell,
 } from "@/components/ui/table";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/scheduling")({
