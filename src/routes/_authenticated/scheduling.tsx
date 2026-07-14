@@ -342,11 +342,11 @@ function SchedulingPage() {
                         <div className="flex gap-2">
                           <Button size="sm" variant="outline" onClick={() => {
                             setAccepted((s) => ({ ...s, [r.id]: "reject" }));
-                            toast({ title: "Recommendation rejected", description: r.id });
+                            toast.message("Recommendation rejected", { description: r.id });
                           }}>Reject</Button>
                           <Button size="sm" onClick={() => {
                             setAccepted((s) => ({ ...s, [r.id]: "accept" }));
-                            toast({ title: "Schedule accepted", description: `${r.id} pushed to departments` });
+                            toast.success("Schedule accepted", { description: `${r.id} pushed to departments` });
                           }}>
                             Accept Schedule <ChevronRight className="ml-1 h-3.5 w-3.5" />
                           </Button>
