@@ -17,6 +17,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedSubmitRouteImport } from './routes/_authenticated/submit'
 import { Route as AuthenticatedSmartEscalationRouteImport } from './routes/_authenticated/smart-escalation'
+import { Route as AuthenticatedSchedulingRouteImport } from './routes/_authenticated/scheduling'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedOfficerRouteImport } from './routes/_authenticated/officer'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -65,6 +66,11 @@ const AuthenticatedSmartEscalationRoute =
     path: '/smart-escalation',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedSchedulingRoute = AuthenticatedSchedulingRouteImport.update({
+  id: '/scheduling',
+  path: '/scheduling',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -113,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/officer': typeof AuthenticatedOfficerRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/scheduling': typeof AuthenticatedSchedulingRoute
   '/smart-escalation': typeof AuthenticatedSmartEscalationRoute
   '/submit': typeof AuthenticatedSubmitRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -129,6 +136,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/officer': typeof AuthenticatedOfficerRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/scheduling': typeof AuthenticatedSchedulingRoute
   '/smart-escalation': typeof AuthenticatedSmartEscalationRoute
   '/submit': typeof AuthenticatedSubmitRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/officer': typeof AuthenticatedOfficerRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/scheduling': typeof AuthenticatedSchedulingRoute
   '/_authenticated/smart-escalation': typeof AuthenticatedSmartEscalationRoute
   '/_authenticated/submit': typeof AuthenticatedSubmitRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -165,6 +174,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/officer'
     | '/profile'
+    | '/scheduling'
     | '/smart-escalation'
     | '/submit'
     | '/admin/users'
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/officer'
     | '/profile'
+    | '/scheduling'
     | '/smart-escalation'
     | '/submit'
     | '/admin/users'
@@ -198,6 +209,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/officer'
     | '/_authenticated/profile'
+    | '/_authenticated/scheduling'
     | '/_authenticated/smart-escalation'
     | '/_authenticated/submit'
     | '/_authenticated/admin/users'
@@ -269,6 +281,13 @@ declare module '@tanstack/react-router' {
       path: '/smart-escalation'
       fullPath: '/smart-escalation'
       preLoaderRoute: typeof AuthenticatedSmartEscalationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/scheduling': {
+      id: '/_authenticated/scheduling'
+      path: '/scheduling'
+      fullPath: '/scheduling'
+      preLoaderRoute: typeof AuthenticatedSchedulingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/profile': {
@@ -343,6 +362,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedOfficerRoute: typeof AuthenticatedOfficerRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedSchedulingRoute: typeof AuthenticatedSchedulingRoute
   AuthenticatedSmartEscalationRoute: typeof AuthenticatedSmartEscalationRoute
   AuthenticatedSubmitRoute: typeof AuthenticatedSubmitRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
@@ -354,6 +374,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedOfficerRoute: AuthenticatedOfficerRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedSchedulingRoute: AuthenticatedSchedulingRoute,
   AuthenticatedSmartEscalationRoute: AuthenticatedSmartEscalationRoute,
   AuthenticatedSubmitRoute: AuthenticatedSubmitRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
