@@ -90,9 +90,25 @@ function AlertsCenter() {
     },
   });
 
-  useRealtime("alerts-live", ["complaints", "complaint_activities", "notifications"], [
-    ["alerts-complaints"],
-  ]);
+  useRealtime(
+    "alerts-live",
+    !isStaff
+      ? [
+          { table: "complaints", filter: `reporter_id=eq.${user.id}` },
+          { table: "notifications", filter: `user_id=eq.${user.id}` },
+        ]
+      : roles.includes("officer") && !roles.includes("admin") && departmentId
+        ? [
+            { table: "complaints", filter: `department_id=eq.${departmentId}` },
+            { table: "notifications", filter: `user_id=eq.${user.id}` },
+          ]
+        : [
+            "complaints",
+            "complaint_activities",
+            { table: "notifications", filter: `user_id=eq.${user.id}` },
+          ],
+    [["alerts-complaints"]],
+  );
 
   const items: FeedItem[] = useMemo(() => {
     const out: FeedItem[] = [];

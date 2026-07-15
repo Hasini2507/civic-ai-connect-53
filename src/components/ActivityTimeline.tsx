@@ -18,10 +18,14 @@ export function ActivityTimeline({ complaintId }: { complaintId: string }) {
     },
   });
 
-  useRealtime(`activities-${complaintId}`, ["complaint_activities", "complaints"], [
-    ["activities", complaintId],
-    ["complaint", complaintId],
-  ]);
+  useRealtime(
+    `activities-${complaintId}`,
+    [
+      { table: "complaint_activities", filter: `complaint_id=eq.${complaintId}` },
+      { table: "complaints", filter: `id=eq.${complaintId}` },
+    ],
+    [["activities", complaintId], ["complaint", complaintId]],
+  );
 
   if (isLoading) return <p className="text-sm text-muted-foreground">Loading timeline…</p>;
   if (!data?.length) return <p className="text-sm text-muted-foreground">No activity yet.</p>;
