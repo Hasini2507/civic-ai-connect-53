@@ -1,7 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   Shield, LayoutDashboard, Plus, ListChecks, ClipboardList,
-  Users, User as UserIcon, LogOut, Bell, Flame, CalendarClock,
+  Users, User as UserIcon, LogOut, Bell, Flame, CalendarClock, Workflow,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";

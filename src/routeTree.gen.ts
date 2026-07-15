@@ -17,6 +17,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedSubmitRouteImport } from './routes/_authenticated/submit'
 import { Route as AuthenticatedSmartEscalationRouteImport } from './routes/_authenticated/smart-escalation'
+import { Route as AuthenticatedSequencingRouteImport } from './routes/_authenticated/sequencing'
 import { Route as AuthenticatedSchedulingRouteImport } from './routes/_authenticated/scheduling'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedOfficerRouteImport } from './routes/_authenticated/officer'
@@ -66,6 +67,11 @@ const AuthenticatedSmartEscalationRoute =
     path: '/smart-escalation',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedSequencingRoute = AuthenticatedSequencingRouteImport.update({
+  id: '/sequencing',
+  path: '/sequencing',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedSchedulingRoute = AuthenticatedSchedulingRouteImport.update({
   id: '/scheduling',
   path: '/scheduling',
@@ -120,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/officer': typeof AuthenticatedOfficerRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/scheduling': typeof AuthenticatedSchedulingRoute
+  '/sequencing': typeof AuthenticatedSequencingRoute
   '/smart-escalation': typeof AuthenticatedSmartEscalationRoute
   '/submit': typeof AuthenticatedSubmitRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -137,6 +144,7 @@ export interface FileRoutesByTo {
   '/officer': typeof AuthenticatedOfficerRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/scheduling': typeof AuthenticatedSchedulingRoute
+  '/sequencing': typeof AuthenticatedSequencingRoute
   '/smart-escalation': typeof AuthenticatedSmartEscalationRoute
   '/submit': typeof AuthenticatedSubmitRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -156,6 +164,7 @@ export interface FileRoutesById {
   '/_authenticated/officer': typeof AuthenticatedOfficerRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/scheduling': typeof AuthenticatedSchedulingRoute
+  '/_authenticated/sequencing': typeof AuthenticatedSequencingRoute
   '/_authenticated/smart-escalation': typeof AuthenticatedSmartEscalationRoute
   '/_authenticated/submit': typeof AuthenticatedSubmitRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -175,6 +184,7 @@ export interface FileRouteTypes {
     | '/officer'
     | '/profile'
     | '/scheduling'
+    | '/sequencing'
     | '/smart-escalation'
     | '/submit'
     | '/admin/users'
@@ -192,6 +202,7 @@ export interface FileRouteTypes {
     | '/officer'
     | '/profile'
     | '/scheduling'
+    | '/sequencing'
     | '/smart-escalation'
     | '/submit'
     | '/admin/users'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/_authenticated/officer'
     | '/_authenticated/profile'
     | '/_authenticated/scheduling'
+    | '/_authenticated/sequencing'
     | '/_authenticated/smart-escalation'
     | '/_authenticated/submit'
     | '/_authenticated/admin/users'
@@ -281,6 +293,13 @@ declare module '@tanstack/react-router' {
       path: '/smart-escalation'
       fullPath: '/smart-escalation'
       preLoaderRoute: typeof AuthenticatedSmartEscalationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/sequencing': {
+      id: '/_authenticated/sequencing'
+      path: '/sequencing'
+      fullPath: '/sequencing'
+      preLoaderRoute: typeof AuthenticatedSequencingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/scheduling': {
@@ -363,6 +382,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOfficerRoute: typeof AuthenticatedOfficerRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedSchedulingRoute: typeof AuthenticatedSchedulingRoute
+  AuthenticatedSequencingRoute: typeof AuthenticatedSequencingRoute
   AuthenticatedSmartEscalationRoute: typeof AuthenticatedSmartEscalationRoute
   AuthenticatedSubmitRoute: typeof AuthenticatedSubmitRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
@@ -375,6 +395,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOfficerRoute: AuthenticatedOfficerRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedSchedulingRoute: AuthenticatedSchedulingRoute,
+  AuthenticatedSequencingRoute: AuthenticatedSequencingRoute,
   AuthenticatedSmartEscalationRoute: AuthenticatedSmartEscalationRoute,
   AuthenticatedSubmitRoute: AuthenticatedSubmitRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
@@ -394,13 +415,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
