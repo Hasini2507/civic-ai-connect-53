@@ -23,6 +23,7 @@ type ProfileRow = {
   department_id: string | null;
   created_at: string;
   roles: AppRole[];
+  [key: string]: unknown;
 };
 
 function AdminUsersPage() {
