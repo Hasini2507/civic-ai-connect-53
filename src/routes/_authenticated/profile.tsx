@@ -19,16 +19,21 @@ function Profile() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    supabase.from("profiles").select("full_name,phone").eq("id", user.id).maybeSingle().then(({ data }) => {
-      if (data) { setFullName(data.full_name ?? ""); setPhone(data.phone ?? ""); }
+    supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle().then(({ data }) => {
+      if (data) setFullName(data.full_name ?? "");
+    });
+    supabase.from("profile_contacts").select("phone").eq("id", user.id).maybeSingle().then(({ data }) => {
+      if (data) setPhone(data.phone ?? "");
     });
   }, [user.id]);
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    const { error } = await supabase.from("profiles").upsert({ id: user.id, full_name: fullName, phone });
+    const { error: pErr } = await supabase.from("profiles").upsert({ id: user.id, full_name: fullName });
+    const { error: cErr } = await supabase.from("profile_contacts").upsert({ id: user.id, phone });
     setSaving(false);
+    const error = pErr ?? cErr;
     if (error) return toast.error(error.message);
     toast.success("Profile updated");
   }

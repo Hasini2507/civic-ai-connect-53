@@ -264,6 +264,35 @@ export type Database = {
           },
         ]
       }
+      profile_contacts: {
+        Row: {
+          created_at: string
+          id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_contacts_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -271,7 +300,6 @@ export type Database = {
           department_id: string | null
           full_name: string | null
           id: string
-          phone: string | null
           updated_at: string
         }
         Insert: {
@@ -280,7 +308,6 @@ export type Database = {
           department_id?: string | null
           full_name?: string | null
           id: string
-          phone?: string | null
           updated_at?: string
         }
         Update: {
@@ -289,7 +316,6 @@ export type Database = {
           department_id?: string | null
           full_name?: string | null
           id?: string
-          phone?: string | null
           updated_at?: string
         }
         Relationships: [

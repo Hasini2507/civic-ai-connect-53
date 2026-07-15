@@ -23,6 +23,7 @@ type ProfileRow = {
   department_id: string | null;
   created_at: string;
   roles: AppRole[];
+  [key: string]: unknown;
 };
 
 function AdminUsersPage() {
@@ -48,14 +49,19 @@ function AdminUsersPage() {
       if (error) throw error;
       const ids = (profiles ?? []).map((p) => p.id);
       if (ids.length === 0) return [];
-      const { data: r } = await supabase.from("user_roles").select("user_id, role").in("user_id", ids);
+      const [{ data: r }, { data: contacts }] = await Promise.all([
+        supabase.from("user_roles").select("user_id, role").in("user_id", ids),
+        supabase.from("profile_contacts").select("id, phone").in("id", ids),
+      ]);
       const roleMap = new Map<string, AppRole[]>();
       (r ?? []).forEach((x) => {
         const arr = roleMap.get(x.user_id) ?? [];
         arr.push(x.role as AppRole);
         roleMap.set(x.user_id, arr);
       });
-      return (profiles ?? []).map((p) => ({ ...p, roles: roleMap.get(p.id) ?? [] }));
+      const phoneMap = new Map<string, string | null>();
+      (contacts ?? []).forEach((c) => phoneMap.set(c.id, c.phone ?? null));
+      return (profiles ?? []).map((p) => ({ ...p, phone: phoneMap.get(p.id) ?? null, roles: roleMap.get(p.id) ?? [] }));
     },
   });
 

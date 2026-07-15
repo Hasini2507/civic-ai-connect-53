@@ -33,8 +33,9 @@ function ComplaintDetail() {
         department = d?.name ?? null;
       }
       if (c?.reporter_id) {
-        const { data: r } = await supabase.from("profiles").select("full_name, phone").eq("id", c.reporter_id).maybeSingle();
-        reporter = r;
+        const { data: r } = await supabase.from("profiles").select("full_name").eq("id", c.reporter_id).maybeSingle();
+        const { data: contact } = await supabase.from("profile_contacts").select("phone").eq("id", c.reporter_id).maybeSingle();
+        reporter = { full_name: r?.full_name ?? null, phone: contact?.phone ?? null };
       }
       return { c, media: media ?? [], department, reporter };
     },
