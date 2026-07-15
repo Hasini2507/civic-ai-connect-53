@@ -40,7 +40,11 @@ function ComplaintDetail() {
     },
   });
 
-  useRealtime(`complaint-${id}`, ["complaints"], [["complaint", id]]);
+  useRealtime(
+    `complaint-${id}`,
+    [{ table: "complaints", filter: `id=eq.${id}` }],
+    [["complaint", id]],
+  );
 
   if (isLoading) return <p className="text-sm text-muted-foreground">Loading…</p>;
   if (!data?.c) return <p>Not found.</p>;
