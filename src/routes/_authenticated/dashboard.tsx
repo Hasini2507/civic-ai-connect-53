@@ -37,7 +37,11 @@ function Dashboard() {
     },
   });
 
-  useRealtime("citizen-dash", ["complaints"], [["my-complaints", user.id]]);
+  useRealtime(
+    "citizen-dash",
+    [{ table: "complaints", filter: `reporter_id=eq.${user.id}` }],
+    [["my-complaints", user.id]],
+  );
 
   const open = mine?.filter((c) => !["resolved", "verified", "closed"].includes(c.status)).length ?? 0;
   const resolved = mine?.filter((c) => ["resolved", "verified", "closed"].includes(c.status)).length ?? 0;
