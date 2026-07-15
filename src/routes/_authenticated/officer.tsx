@@ -44,9 +44,16 @@ function OfficerPage() {
     },
   });
 
-  useRealtime("officer-queue", ["complaints", "complaint_activities"], [
-    ["officer-queue", departmentId],
-  ]);
+  useRealtime(
+    "officer-queue",
+    departmentId
+      ? [
+          { table: "complaints", filter: `department_id=eq.${departmentId}` },
+          "complaint_activities",
+        ]
+      : [{ table: "complaints", filter: `assigned_officer_id=eq.${user.id}` }],
+    [["officer-queue", departmentId]],
+  );
 
   const updateStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: any }) => {
