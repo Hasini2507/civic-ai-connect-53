@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, MapPin, Clock, Building2, Eye, EyeOff, Sparkles, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { StatusBadge, PriorityBadge } from "@/components/StatusBadge";
+import { SlaCountdown } from "@/components/SlaCountdown";
 import { categoryLabel, statusLabel, STATUS_FLOW, VISIBILITY_LABELS } from "@/lib/civic";
 import { ActivityTimeline } from "@/components/ActivityTimeline";
 import { useRealtime } from "@/hooks/use-realtime";
@@ -51,7 +52,6 @@ function ComplaintDetail() {
   if (!data?.c) return <p>Not found.</p>;
   const c = data.c as any;
 
-  const slaRemaining = c.sla_due_at ? Math.round((new Date(c.sla_due_at).getTime() - Date.now()) / 3600000) : null;
   const currentIdx = STATUS_FLOW.indexOf(c.status as any);
 
   return (
@@ -140,12 +140,9 @@ function ComplaintDetail() {
               {c.address && <li className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 text-muted-foreground" />{c.address}</li>}
               {c.sla_due_at && (
                 <li className="flex items-start gap-2"><Clock className="mt-0.5 h-4 w-4 text-muted-foreground" />
-                  <span>SLA: {new Date(c.sla_due_at).toLocaleString()}
-                    {slaRemaining !== null && (
-                      <span className={`ml-1 font-medium ${slaRemaining < 0 ? "text-destructive" : "text-success"}`}>
-                        ({slaRemaining < 0 ? `${Math.abs(slaRemaining)}h overdue` : `${slaRemaining}h left`})
-                      </span>
-                    )}
+                  <span className="space-y-1">
+                    <span className="block text-muted-foreground">SLA due {new Date(c.sla_due_at).toLocaleString()}</span>
+                    <SlaCountdown dueAt={c.sla_due_at} resolved={["resolved","closed","verified"].includes(c.status)} />
                   </span>
                 </li>
               )}

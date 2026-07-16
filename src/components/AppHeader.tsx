@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Route as AuthRoute } from "@/routes/_authenticated/route";
 import type { AppRole } from "@/lib/civic";
 import { ROLE_LABELS } from "@/lib/civic";
+import { useSlaAlerts } from "@/hooks/use-sla-alerts";
 
 type NavLink = { to: string; label: string; icon: any; roles?: AppRole[] };
 
@@ -36,10 +37,12 @@ function visibleFor(roles: AppRole[]): NavLink[] {
 export function AppHeader() {
   const navigate = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
-  const { roles } = AuthRoute.useRouteContext();
+  const { user, roles, departmentId } = AuthRoute.useRouteContext();
+  useSlaAlerts({ userId: user?.id, roles, departmentId });
   const links = visibleFor(roles);
   const primary =
     (["admin", "officer", "citizen"] as AppRole[]).find((r) => roles.includes(r)) ?? "citizen";
+
 
   async function signOut() {
     await supabase.auth.signOut();
