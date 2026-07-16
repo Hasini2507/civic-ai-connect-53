@@ -127,7 +127,7 @@ function computePriority(complaints: Complaint[]): Scored[] {
     const supporters = c.supporter_count ?? 0;
     const scopeScore = Math.min(100, meta.scope * 0.6 + Math.min(supporters * 4, 40)); // citizens affected
     const clusterScore = Math.min(100, (clusterSize - 1) * 25);              // co-located issues
-    const emergencyScore = c.is_emergency ? 100 : 0;
+    const emergencyScore = (c.priority_level === "critical") ? 100 : 0;
     const infraScore = meta.tier <= 2 ? 80 : meta.tier === 3 ? 55 : 30;      // infrastructure dependency
 
     const weights = {
@@ -151,7 +151,7 @@ function computePriority(complaints: Complaint[]): Scored[] {
 
     const factors = [
       { label: `Safety risk ${Math.round(severityScore)}`, value: severityScore, icon: ShieldAlert },
-      { label: c.is_emergency ? "Emergency flagged" : "Non-emergency", value: emergencyScore, icon: Siren },
+      { label: (c.priority_level === "critical") ? "Emergency flagged" : "Non-emergency", value: emergencyScore, icon: Siren },
       { label: slaScore >= 85 ? "SLA breach imminent" : "SLA on track", value: slaScore, icon: Clock },
       { label: `${supporters} citizens affected`, value: scopeScore, icon: Users },
       { label: meta.tier <= 2 ? "Blocks other works" : "Surface / above-ground", value: infraScore, icon: Layers },
@@ -160,7 +160,7 @@ function computePriority(complaints: Complaint[]): Scored[] {
     ];
 
     const impactParts: string[] = [];
-    if (c.is_emergency) impactParts.push("emergency response required");
+    if ((c.priority_level === "critical")) impactParts.push("emergency response required");
     if (scopeScore >= 60) impactParts.push(`affects ~${Math.max(50, supporters * 20)} residents`);
     if (meta.tier <= 2) impactParts.push("blocks downstream surface works");
     if (slaScore >= 85) impactParts.push("SLA at risk");
@@ -234,7 +234,7 @@ function PriorityOrderPage() {
     queryFn: async () => {
       let query = supabase
         .from("complaints")
-        .select("id,title,category,status,priority_level,priority_score,supporter_count,latitude,longitude,address,created_at,sla_due_at,is_emergency")
+        .select("id,title,category,status,priority_level,priority_score,supporter_count,latitude,longitude,address,created_at,sla_due_at")
         .order("created_at", { ascending: false })
         .limit(200);
       if (!isAdmin && departmentId) query = query.eq("department_id", departmentId);
@@ -329,7 +329,7 @@ function PriorityOrderPage() {
                           </span>
                           <Badge variant="outline">{categoryLabel(s.c.category)}</Badge>
                           <Badge variant="outline">{DEPT_LABEL[s.dept]}</Badge>
-                          {s.c.is_emergency && (
+                          {s.(c.priority_level === "critical") && (
                             <span className="inline-flex items-center gap-1 rounded-full bg-destructive/15 px-2 py-0.5 text-xs font-medium text-destructive">
                               <Siren className="h-3 w-3" /> Emergency
                             </span>
