@@ -20,6 +20,7 @@ import { Route as AuthenticatedSmartEscalationRouteImport } from './routes/_auth
 import { Route as AuthenticatedSequencingRouteImport } from './routes/_authenticated/sequencing'
 import { Route as AuthenticatedSchedulingRouteImport } from './routes/_authenticated/scheduling'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedPriorityOrderRouteImport } from './routes/_authenticated/priority-order'
 import { Route as AuthenticatedOfficerRouteImport } from './routes/_authenticated/officer'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedComplaintsRouteImport } from './routes/_authenticated/complaints'
@@ -82,6 +83,12 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPriorityOrderRoute =
+  AuthenticatedPriorityOrderRouteImport.update({
+    id: '/priority-order',
+    path: '/priority-order',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedOfficerRoute = AuthenticatedOfficerRouteImport.update({
   id: '/officer',
   path: '/officer',
@@ -124,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/complaints': typeof AuthenticatedComplaintsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/officer': typeof AuthenticatedOfficerRoute
+  '/priority-order': typeof AuthenticatedPriorityOrderRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/scheduling': typeof AuthenticatedSchedulingRoute
   '/sequencing': typeof AuthenticatedSequencingRoute
@@ -142,6 +150,7 @@ export interface FileRoutesByTo {
   '/complaints': typeof AuthenticatedComplaintsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/officer': typeof AuthenticatedOfficerRoute
+  '/priority-order': typeof AuthenticatedPriorityOrderRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/scheduling': typeof AuthenticatedSchedulingRoute
   '/sequencing': typeof AuthenticatedSequencingRoute
@@ -162,6 +171,7 @@ export interface FileRoutesById {
   '/_authenticated/complaints': typeof AuthenticatedComplaintsRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/officer': typeof AuthenticatedOfficerRoute
+  '/_authenticated/priority-order': typeof AuthenticatedPriorityOrderRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/scheduling': typeof AuthenticatedSchedulingRoute
   '/_authenticated/sequencing': typeof AuthenticatedSequencingRoute
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
     | '/complaints'
     | '/dashboard'
     | '/officer'
+    | '/priority-order'
     | '/profile'
     | '/scheduling'
     | '/sequencing'
@@ -200,6 +211,7 @@ export interface FileRouteTypes {
     | '/complaints'
     | '/dashboard'
     | '/officer'
+    | '/priority-order'
     | '/profile'
     | '/scheduling'
     | '/sequencing'
@@ -219,6 +231,7 @@ export interface FileRouteTypes {
     | '/_authenticated/complaints'
     | '/_authenticated/dashboard'
     | '/_authenticated/officer'
+    | '/_authenticated/priority-order'
     | '/_authenticated/profile'
     | '/_authenticated/scheduling'
     | '/_authenticated/sequencing'
@@ -316,6 +329,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/priority-order': {
+      id: '/_authenticated/priority-order'
+      path: '/priority-order'
+      fullPath: '/priority-order'
+      preLoaderRoute: typeof AuthenticatedPriorityOrderRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/officer': {
       id: '/_authenticated/officer'
       path: '/officer'
@@ -380,6 +400,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedComplaintsRoute: typeof AuthenticatedComplaintsRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedOfficerRoute: typeof AuthenticatedOfficerRoute
+  AuthenticatedPriorityOrderRoute: typeof AuthenticatedPriorityOrderRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedSchedulingRoute: typeof AuthenticatedSchedulingRoute
   AuthenticatedSequencingRoute: typeof AuthenticatedSequencingRoute
@@ -393,6 +414,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedComplaintsRoute: AuthenticatedComplaintsRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedOfficerRoute: AuthenticatedOfficerRoute,
+  AuthenticatedPriorityOrderRoute: AuthenticatedPriorityOrderRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedSchedulingRoute: AuthenticatedSchedulingRoute,
   AuthenticatedSequencingRoute: AuthenticatedSequencingRoute,
@@ -415,13 +437,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
