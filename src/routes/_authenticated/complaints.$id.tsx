@@ -141,12 +141,9 @@ function ComplaintDetail() {
               {c.address && <li className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 text-muted-foreground" />{c.address}</li>}
               {c.sla_due_at && (
                 <li className="flex items-start gap-2"><Clock className="mt-0.5 h-4 w-4 text-muted-foreground" />
-                  <span>SLA: {new Date(c.sla_due_at).toLocaleString()}
-                    {slaRemaining !== null && (
-                      <span className={`ml-1 font-medium ${slaRemaining < 0 ? "text-destructive" : "text-success"}`}>
-                        ({slaRemaining < 0 ? `${Math.abs(slaRemaining)}h overdue` : `${slaRemaining}h left`})
-                      </span>
-                    )}
+                  <span className="space-y-1">
+                    <span className="block text-muted-foreground">SLA due {new Date(c.sla_due_at).toLocaleString()}</span>
+                    <SlaCountdown dueAt={c.sla_due_at} resolved={["resolved","closed","verified"].includes(c.status)} />
                   </span>
                 </li>
               )}
