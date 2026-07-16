@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, MapPin, Clock, Building2, Eye, EyeOff, Sparkles, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { StatusBadge, PriorityBadge } from "@/components/StatusBadge";
+import { SlaCountdown } from "@/components/SlaCountdown";
 import { categoryLabel, statusLabel, STATUS_FLOW, VISIBILITY_LABELS } from "@/lib/civic";
 import { ActivityTimeline } from "@/components/ActivityTimeline";
 import { useRealtime } from "@/hooks/use-realtime";
