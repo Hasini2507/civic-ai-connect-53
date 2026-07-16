@@ -37,14 +37,19 @@ function bucketFor(dueAt: string | null): string | null {
  * is crossed. Also polls every 60s so purely time-based deadlines fire even
  * without a DB write.
  */
-export function useSlaAlerts() {
-  const { user, roles, departmentId } = useAuth();
+export function useSlaAlerts(opts: {
+  userId: string | null | undefined;
+  roles: AppRole[];
+  departmentId: string | null;
+}) {
+  const { userId, roles, departmentId } = opts;
   const seenBucket = useRef<Map<string, string>>(new Map());
   const seenPriority = useRef<Map<string, string>>(new Map());
   const seededRef = useRef(false);
 
   useEffect(() => {
-    if (!user) return;
+    if (!userId) return;
+
     const isStaff = roles.includes("officer") || roles.includes("admin");
     const isOfficerOnly = roles.includes("officer") && !roles.includes("admin");
 
