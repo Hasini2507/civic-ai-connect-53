@@ -36,10 +36,12 @@ function visibleFor(roles: AppRole[]): NavLink[] {
 export function AppHeader() {
   const navigate = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
-  const { roles } = AuthRoute.useRouteContext();
+  const { user, roles, departmentId } = AuthRoute.useRouteContext();
+  useSlaAlerts({ userId: user?.id, roles, departmentId });
   const links = visibleFor(roles);
   const primary =
     (["admin", "officer", "citizen"] as AppRole[]).find((r) => roles.includes(r)) ?? "citizen";
+
 
   async function signOut() {
     await supabase.auth.signOut();
