@@ -52,7 +52,6 @@ function ComplaintDetail() {
   if (!data?.c) return <p>Not found.</p>;
   const c = data.c as any;
 
-  const slaRemaining = c.sla_due_at ? Math.round((new Date(c.sla_due_at).getTime() - Date.now()) / 3600000) : null;
   const currentIdx = STATUS_FLOW.indexOf(c.status as any);
 
   return (
