@@ -191,7 +191,7 @@ function QueueSection({ title, desc, items, updateStatus, muted }: { title: stri
         )}
         {items.map((c) => {
           const nexts = OFFICER_NEXT_STATUS[c.status] ?? [];
-          const slaRem = c.sla_due_at ? Math.round((new Date(c.sla_due_at).getTime() - Date.now()) / 3600000) : null;
+          const resolved = ["resolved", "closed", "verified"].includes(c.status);
           const pred = predictNextAction(c);
           const urgTone = pred.urgency === "high" ? "text-destructive" : pred.urgency === "medium" ? "text-warning-foreground" : "text-muted-foreground";
           return (
@@ -202,11 +202,8 @@ function QueueSection({ title, desc, items, updateStatus, muted }: { title: stri
                   <span>{categoryLabel(c.category)}</span>
                   <span>·</span>
                   <span>{new Date(c.created_at).toLocaleDateString()}</span>
-                  {slaRem !== null && (
-                    <span className={slaRem < 0 ? "text-destructive font-medium" : "text-success"}>
-                      <Clock className="mr-0.5 inline h-3 w-3" />
-                      {slaRem < 0 ? `${Math.abs(slaRem)}h overdue` : `${slaRem}h left`}
-                    </span>
+                  {c.sla_due_at && (
+                    <SlaCountdown dueAt={c.sla_due_at} resolved={resolved} compact className="text-xs" />
                   )}
                 </div>
                 {!muted && (
