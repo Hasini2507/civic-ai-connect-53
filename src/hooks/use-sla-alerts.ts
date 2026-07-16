@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/use-auth";
+import type { AppRole } from "@/lib/civic";
+
 
 type MinComplaint = {
   id: string;
