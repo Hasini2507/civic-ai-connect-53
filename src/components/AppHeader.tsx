@@ -23,6 +23,7 @@ const ALL_LINKS: NavLink[] = [
   { to: "/alerts", label: "Live Alerts", icon: Bell, roles: ["officer", "admin"] },
   { to: "/scheduling", label: "Scheduling", icon: CalendarClock, roles: ["officer", "admin"] },
   { to: "/sequencing", label: "Sequencing", icon: Workflow, roles: ["officer", "admin"] },
+  { to: "/priority-order", label: "Priority Order", icon: Flame, roles: ["officer", "admin"] },
   { to: "/smart-escalation", label: "Smart Escalation", icon: Flame, roles: ["officer", "admin"] },
   // Admin
   { to: "/admin/users", label: "Officers", icon: Users, roles: ["admin"] },
