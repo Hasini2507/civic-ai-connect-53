@@ -61,7 +61,7 @@ export function useSlaAlerts(opts: {
         .select("id,title,status,priority_level,sla_due_at,reporter_id,assigned_officer_id,department_id")
         .not("sla_due_at", "is", null)
         .limit(200);
-      if (!isStaff) q = q.eq("reporter_id", user!.id);
+      if (!isStaff) q = q.eq("reporter_id", userId!);
       else if (isOfficerOnly && departmentId) q = q.eq("department_id", departmentId);
       const { data } = await q;
       return (data ?? []) as MinComplaint[];
@@ -143,5 +143,5 @@ export function useSlaAlerts(opts: {
       supabase.removeChannel(channel);
       window.clearInterval(poll);
     };
-  }, [user, roles.join(","), departmentId]);
+  }, [userId, roles.join(","), departmentId]);
 }
