@@ -64,7 +64,7 @@ type Complaint = {
   address: string | null;
   created_at: string;
   sla_due_at: string | null;
-  is_emergency: boolean | null;
+  
 };
 
 function areaKey(c: Pick<Complaint, "latitude" | "longitude" | "address">) {
