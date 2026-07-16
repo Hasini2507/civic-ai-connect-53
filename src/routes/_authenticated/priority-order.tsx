@@ -329,7 +329,7 @@ function PriorityOrderPage() {
                           </span>
                           <Badge variant="outline">{categoryLabel(s.c.category)}</Badge>
                           <Badge variant="outline">{DEPT_LABEL[s.dept]}</Badge>
-                          {s.(c.priority_level === "critical") && (
+                          {s.c.priority_level === "critical" && (
                             <span className="inline-flex items-center gap-1 rounded-full bg-destructive/15 px-2 py-0.5 text-xs font-medium text-destructive">
                               <Siren className="h-3 w-3" /> Emergency
                             </span>
