@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Route as AuthRoute } from "@/routes/_authenticated/route";
 import type { AppRole } from "@/lib/civic";
 import { ROLE_LABELS } from "@/lib/civic";
+import { useSlaAlerts } from "@/hooks/use-sla-alerts";
 
 type NavLink = { to: string; label: string; icon: any; roles?: AppRole[] };
 
