@@ -113,26 +113,24 @@ function SignInForm({ onDone }: { onDone: () => void }) {
 
 const signupSchema = credSchema.extend({
   fullName: z.string().trim().min(2, "Name must be at least 2 characters").max(100),
-  role: z.enum(["citizen", "officer", "admin"]),
 });
 
 function SignUpForm({ onDone }: { onDone: () => void }) {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<AppRole>("citizen");
   const [loading, setLoading] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    const parsed = signupSchema.safeParse({ fullName, email, password, role });
+    const parsed = signupSchema.safeParse({ fullName, email, password });
     if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
     setLoading(true);
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { full_name: fullName, requested_role: role },
+        data: { full_name: fullName },
         emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
       },
     });
@@ -148,20 +146,9 @@ function SignUpForm({ onDone }: { onDone: () => void }) {
 
   return (
     <form onSubmit={submit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="su-role">I'm signing up as</Label>
-        <Select value={role} onValueChange={(v) => setRole(v as AppRole)}>
-          <SelectTrigger id="su-role"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            {ROLE_OPTIONS.map((r) => (
-              <SelectItem key={r} value={r}>{ROLE_LABELS[r]}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <p className="text-xs text-muted-foreground">
-          Citizens report issues. Officers manage assigned complaints. Admins oversee officers and escalations.
-        </p>
-      </div>
+      <p className="text-xs text-muted-foreground">
+        New accounts are created as citizens. Officer and admin access is granted by an existing administrator.
+      </p>
       <div className="space-y-2">
         <Label htmlFor="su-name">Full name</Label>
         <Input id="su-name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
