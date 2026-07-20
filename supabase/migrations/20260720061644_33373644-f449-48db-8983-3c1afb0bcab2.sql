@@ -1,0 +1,1 @@
+GRANT EXECUTE ON FUNCTION public.can_read_complaint_media_object(text) TO authenticated;
