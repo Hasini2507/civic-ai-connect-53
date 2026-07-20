@@ -19,6 +19,7 @@ const ALL_LINKS: NavLink[] = [
   { to: "/submit", label: "Report", icon: Plus, roles: ["citizen"] },
   { to: "/complaints", label: "My Reports", icon: ListChecks, roles: ["citizen"] },
   { to: "/alerts", label: "Alerts", icon: Bell, roles: ["citizen"] },
+  { to: "/inbox", label: "Inbox", icon: Inbox, roles: ["citizen", "officer", "admin"] },
   // Officer
   { to: "/officer", label: "Dashboard", icon: ClipboardList, roles: ["officer"] },
   { to: "/alerts", label: "Live Alerts", icon: Bell, roles: ["officer", "admin"] },
