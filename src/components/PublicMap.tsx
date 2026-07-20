@@ -93,3 +93,14 @@ function escapeHtml(s: string) {
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string,
   );
 }
+
+function safeImageUrl(u: string | null | undefined): string | null {
+  if (!u) return null;
+  try {
+    const url = new URL(u);
+    if (url.protocol === "http:" || url.protocol === "https:") return url.toString();
+    return null;
+  } catch {
+    return null;
+  }
+}
