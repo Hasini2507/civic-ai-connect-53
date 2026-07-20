@@ -22,6 +22,7 @@ import { Route as AuthenticatedSchedulingRouteImport } from './routes/_authentic
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedPriorityOrderRouteImport } from './routes/_authenticated/priority-order'
 import { Route as AuthenticatedOfficerRouteImport } from './routes/_authenticated/officer'
+import { Route as AuthenticatedInboxRouteImport } from './routes/_authenticated/inbox'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedComplaintsRouteImport } from './routes/_authenticated/complaints'
 import { Route as AuthenticatedAlertsRouteImport } from './routes/_authenticated/alerts'
@@ -94,6 +95,11 @@ const AuthenticatedOfficerRoute = AuthenticatedOfficerRouteImport.update({
   path: '/officer',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedInboxRoute = AuthenticatedInboxRouteImport.update({
+  id: '/inbox',
+  path: '/inbox',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/alerts': typeof AuthenticatedAlertsRoute
   '/complaints': typeof AuthenticatedComplaintsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/inbox': typeof AuthenticatedInboxRoute
   '/officer': typeof AuthenticatedOfficerRoute
   '/priority-order': typeof AuthenticatedPriorityOrderRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -149,6 +156,7 @@ export interface FileRoutesByTo {
   '/alerts': typeof AuthenticatedAlertsRoute
   '/complaints': typeof AuthenticatedComplaintsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/inbox': typeof AuthenticatedInboxRoute
   '/officer': typeof AuthenticatedOfficerRoute
   '/priority-order': typeof AuthenticatedPriorityOrderRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -170,6 +178,7 @@ export interface FileRoutesById {
   '/_authenticated/alerts': typeof AuthenticatedAlertsRoute
   '/_authenticated/complaints': typeof AuthenticatedComplaintsRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/inbox': typeof AuthenticatedInboxRoute
   '/_authenticated/officer': typeof AuthenticatedOfficerRoute
   '/_authenticated/priority-order': typeof AuthenticatedPriorityOrderRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
     | '/alerts'
     | '/complaints'
     | '/dashboard'
+    | '/inbox'
     | '/officer'
     | '/priority-order'
     | '/profile'
@@ -210,6 +220,7 @@ export interface FileRouteTypes {
     | '/alerts'
     | '/complaints'
     | '/dashboard'
+    | '/inbox'
     | '/officer'
     | '/priority-order'
     | '/profile'
@@ -230,6 +241,7 @@ export interface FileRouteTypes {
     | '/_authenticated/alerts'
     | '/_authenticated/complaints'
     | '/_authenticated/dashboard'
+    | '/_authenticated/inbox'
     | '/_authenticated/officer'
     | '/_authenticated/priority-order'
     | '/_authenticated/profile'
@@ -343,6 +355,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOfficerRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/inbox': {
+      id: '/_authenticated/inbox'
+      path: '/inbox'
+      fullPath: '/inbox'
+      preLoaderRoute: typeof AuthenticatedInboxRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -399,6 +418,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAlertsRoute: typeof AuthenticatedAlertsRoute
   AuthenticatedComplaintsRoute: typeof AuthenticatedComplaintsRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedInboxRoute: typeof AuthenticatedInboxRoute
   AuthenticatedOfficerRoute: typeof AuthenticatedOfficerRoute
   AuthenticatedPriorityOrderRoute: typeof AuthenticatedPriorityOrderRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
@@ -413,6 +433,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAlertsRoute: AuthenticatedAlertsRoute,
   AuthenticatedComplaintsRoute: AuthenticatedComplaintsRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedInboxRoute: AuthenticatedInboxRoute,
   AuthenticatedOfficerRoute: AuthenticatedOfficerRoute,
   AuthenticatedPriorityOrderRoute: AuthenticatedPriorityOrderRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
