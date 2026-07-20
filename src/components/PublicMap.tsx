@@ -57,8 +57,9 @@ export function PublicMap({ issues, onSelect }: { issues: MapIssue[]; onSelect?:
         fillColor: color,
         fillOpacity: 0.9,
       });
-      const img = i.imageUrl
-        ? `<img src="${i.imageUrl}" style="width:100%;height:96px;object-fit:cover;border-radius:6px;margin-bottom:6px"/>`
+      const safeUrl = safeImageUrl(i.imageUrl);
+      const img = safeUrl
+        ? `<img src="${escapeHtml(safeUrl)}" style="width:100%;height:96px;object-fit:cover;border-radius:6px;margin-bottom:6px"/>`
         : "";
       m.bindPopup(
         `<div style="min-width:200px;font-family:inherit">
